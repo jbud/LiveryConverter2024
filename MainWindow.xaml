@@ -31,7 +31,7 @@
         <TextBox x:Name="textureFolder" TextWrapping="Wrap" Text="..." TextChanged="textureFolder_TextChanged" Grid.Column="2" Grid.Row="2" Margin="10,2,10,2"/>
         <Button x:Name="button1" Content="..." Click="button1_Click" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Center" Height="31" Width="33"/>
         <ComboBox x:Name="comboBox" HorizontalAlignment="Left" SelectionChanged="comboBox_SelectionChanged" Grid.Column="2" Grid.Row="5" Margin="10,2,0,2">
-            <ComboBoxItem Content="Steam" IsSelected="True"/>
+            <ComboBoxItem Content="Steam"/>
             <ComboBoxItem Content="MS Store"/>
         </ComboBox>
         <TextBox x:Name="sdkPath" TextWrapping="Wrap" Text="..." Grid.Column="2" Grid.Row="3" Margin="10,2,10,2"/>

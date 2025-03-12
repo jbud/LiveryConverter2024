@@ -26,6 +26,18 @@ namespace LiveryConverter2024.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string store {
+            get {
+                return ((string)(this["store"]));
+            }
+            set {
+                this["store"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string sdkPath {
             get {
                 return ((string)(this["sdkPath"]));
@@ -68,18 +80,6 @@ namespace LiveryConverter2024.Properties {
             }
             set {
                 this["projectPath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Steam")]
-        public string store {
-            get {
-                return ((string)(this["store"]));
-            }
-            set {
-                this["store"] = value;
             }
         }
     }

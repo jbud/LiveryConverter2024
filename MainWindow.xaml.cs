@@ -1,6 +1,8 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Packaging;
 using System.Reflection;
 using System.Security.Cryptography.Pkcs;
 using System.Text;
@@ -11,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
@@ -52,9 +55,7 @@ namespace LiveryConverter2024
             }
         }
         private readonly string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "com.budzique.livery-converter.app\\");
-        private Process p1;
-        private Process p2;
-        private Process p3;
+
         private void clearPath(System.IO.DirectoryInfo directory)
         {
             foreach (System.IO.FileInfo file in directory.GetFiles()) file.Delete();
@@ -67,10 +68,16 @@ namespace LiveryConverter2024
 
         private void Prepare_Dirs()
         {
-            debug.AppendText("Creating Directories\n");
-            debug.ScrollToEnd();
             System.IO.Directory.CreateDirectory(path);
+            Dispatcher.Invoke(() =>
+            {
+                DebugConsole = "app directory created at: \n" + path + "\n";
+            });
             clearPath(new DirectoryInfo(path));
+            Dispatcher.Invoke(() =>
+            {
+                DebugConsole = "Creating project structure...\n";
+            });
             Assembly asm = Assembly.GetExecutingAssembly();
             string[] resources = asm.GetManifestResourceNames();
 
@@ -78,7 +85,7 @@ namespace LiveryConverter2024
             {
                 if (r.Contains("texconv.exe"))
                 {
-                    debug.AppendText("extracting texconv.exe!\n");
+                    debug.AppendText("extracting texconv.exe from resources!\n");
                     debug.ScrollToEnd();
                     string filename = r.Replace("LiveryConverter2024.includes.", "");
                     Stream? asmStream = GetType().Assembly.GetManifestResourceStream(r);
@@ -136,7 +143,7 @@ namespace LiveryConverter2024
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Properties.Settings.Default.store = comboBox.SelectedItem.ToString();
+            Properties.Settings.Default.store = ((ComboBoxItem)comboBox.SelectedItem).Content.ToString(); 
             Properties.Settings.Default.Save();
         }
 
@@ -170,34 +177,6 @@ namespace LiveryConverter2024
                 Properties.Settings.Default.layoutGenPath = folderName;
                 Properties.Settings.Default.Save();
             }
-        }
-        private void generateKTX2()
-        {
-            
-
-            string stearing = " ";
-            if (Properties.Settings.Default.store == "Steam")
-            {
-                stearing = " -forceSteam ";
-            }
-            using (p3 = new Process()) 
-            {
-                p3.StartInfo.FileName = Properties.Settings.Default.sdkPath + "\\tools\\bin\\fspackagetool.exe";
-                p3.StartInfo.Arguments = "-nopause"+stearing+ path + "livery-converter-2024.xml";
-                p3.StartInfo.RedirectStandardOutput = true;
-                p3.Start();
-                string output = p3.StandardOutput.ReadToEnd();
-                p3.WaitForExit();
-                debug.AppendText(output);
-                debug.ScrollToEnd();
-            }
-            
-            /**
-             * TODO:
-             *  move new textures to desired location: Properties.Settings.Default.texturePath
-             *  run MSFSLayoutGenerator.exe
-             * 
-             * **/
         }
 
         private void generateXMLs()
@@ -335,10 +314,46 @@ namespace LiveryConverter2024
             this.Dispatcher.Invoke((Action)(() => {
                 Progress.Visibility = Visibility.Hidden;
             }));
+
+            // Copy output from : path + Packages\\livery-converter-2024\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\
+            // to: Properties.Settings.Default.texturePath
+
+            DirectoryInfo d = new DirectoryInfo(path + "Packages\\livery-converter-2024\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture");
+            FileInfo[] i = d.GetFiles();
             Dispatcher.Invoke(() =>
             {
-                DebugConsole = "Conversion Complete, tune in next week for the rest of the functionality!\n";
+                DebugConsole = "Moving textures to project path...\n";
             });
+            string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
+
+            foreach (FileInfo f in i)
+            {
+                //f.MoveTo(Properties.Settings.Default.texturePath+"\\");
+                File.Copy(f.FullName, Properties.Settings.Default.texturePath + "\\" + f.Name);
+            }
+            if (File.Exists(Properties.Settings.Default.projectPath + "\\layout.json"))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    DebugConsole = "layout.json Found, running MSFSLayoutGenerator...\n";
+                });
+                await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json", this);
+
+            }
+            else 
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    DebugConsole = "Unable to locate layout.json in Project Path\nConverted textures can be found here: "+Properties.Settings.Default.texturePath+"\n";
+                });
+            }
+
+                // invoke LayoutGenerator on layout.json in Properties.Settings.Default.projectPath
+
+                Dispatcher.Invoke(() =>
+                {
+                    DebugConsole = "Conversion Complete!\n";
+                });
         }
 
 
@@ -347,7 +362,7 @@ namespace LiveryConverter2024
             //Prepare_Dirs();
             var fileDialog = new OpenFileDialog
             {
-                Filter = "Direct Draw Surface files (*.DDS)|*.DDS|" + "All files (*.*)|*.*",
+                Filter = "Direct Draw Surface files (*.DDS)|*.DDS",
                 Multiselect = true
             };
             if (fileDialog.ShowDialog() == true)
@@ -356,18 +371,15 @@ namespace LiveryConverter2024
                 
                 foreach (string f in fileDialog.FileNames)
                 {
-                    debug.AppendText(f + "\n");
-                    debug.ScrollToEnd();
+                    Dispatcher.Invoke(() =>
+                    {
+                        DebugConsole = "Uploading textures to project...\n";
+                    });
                     File.Copy(f, path + "DDSINPUT\\" + System.IO.Path.GetFileName(f));
-
                 }
                 ProcessHandler();
             }
 
-        }
-        private void p1_Exited(object sender, System.EventArgs e)
-        {
-            
         }
     }
 }

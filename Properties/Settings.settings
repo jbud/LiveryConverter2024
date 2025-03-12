@@ -2,6 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="LiveryConverter2024.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
+    <Setting Name="store" Type="System.String" Scope="User">
+      <Value Profile="(Default)">
+                </Value>
+    </Setting>
     <Setting Name="sdkPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">
                 </Value>
@@ -16,10 +20,6 @@
     </Setting>
     <Setting Name="projectPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">
-                </Value>
-    </Setting>
-    <Setting Name="store" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Steam
                 </Value>
     </Setting>
   </Settings>
