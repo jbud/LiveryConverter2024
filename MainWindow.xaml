@@ -46,6 +46,7 @@
         <Label x:Name="label_Copy3" Content="Game Version" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.474,0.567" Grid.Row="5" Height="23" Width="85" Grid.Column="1"/>
         <Label x:Name="label_Copy4" Content="Debug Output:" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.474,0.567" Grid.Column="1" Grid.Row="6"/>
         <ui:Button x:Name="button4" Content="Upload MSFS 2020 Textures" Click="button4_Click" Grid.Column="4" HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Stretch" Margin="5,5,5,5"/>
+        <ui:ProgressRing x:Name="Progress" Grid.Column="4" HorizontalAlignment="Center" Grid.Row="4" VerticalAlignment="Center" Grid.RowSpan="2" Visibility="Hidden" Progress="0"/>
 
     </Grid>
 </Window>
