@@ -32,12 +32,23 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: bin/
         # The desired behavior if no files are found using the provided path.
-    - name: Automated Releases
+    - name: Read VERSION file
+      id: getversion
+      run: echo "::set-output name=version::$(cat VERSION.txt)"
+    - name: Read VERSION file
+      id: getCL
+      run: echo "::set-output name=cl::$(cat CHANGELOG.md)"
+    - name: Create a Release in a GitHub Action
       # You may pin to the exact commit or the version.
-      # uses: AnshKetchum/auto-changelog-release@c49aad1a8a077d9364be2e093a34bd4e3290dc0c
-      uses: AnshKetchum/auto-changelog-release@alpha-1
+      # uses: comnoco/create-release-action@7dea6dc82ac9d97ced7a764aa82811451bba80e0
+      uses: comnoco/create-release-action@v2.0.5
       with:
-        # Personal access token to access Github API
-        GIT_PERSONAL_ACCESS_TOKEN:  ${{ secrets.GIT_KEY }}
-              
+        # The name of the tag. This should come from the webhook payload, `github.GITHUB_REF` when a user pushes a new tag
+        tag_name: ${{ steps.getversion.outputs.version }}
+        # The name of the release. For example, `Release v1.0.1`
+        release_name: v${{ steps.getversion.outputs.version }}-alpha
+        # Text describing the contents of the tag.
+        body: ${{ steps.getCL.outputs.cl }}
+        # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
+        prerelease: true
               
