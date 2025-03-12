@@ -25,6 +25,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
     - name: Upload a Build Artifact
+      id: artifacto
       uses: actions/upload-artifact@v4.6.1
       with:
         # Artifact name
@@ -39,6 +40,8 @@ jobs:
       id: getCL
       run: echo "::set-output name=cl::$(cat CHANGELOG.md)"
     - name: Create a Release in a GitHub Action
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # You may pin to the exact commit or the version.
       # uses: comnoco/create-release-action@7dea6dc82ac9d97ced7a764aa82811451bba80e0
       uses: comnoco/create-release-action@v2.0.5
@@ -51,4 +54,15 @@ jobs:
         body: ${{ steps.getCL.outputs.cl }}
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
         prerelease: true
+    - name: Upload to Release Action
+      # You may pin to the exact commit or the version.
+      # uses: Shopify/upload-to-release@c77c9b3e5d288adaef98a7007bf92340ec6ce03b
+      uses: Shopify/upload-to-release@v2.0.0
+      with:
+        # Artifact name
+        name: ${{ steps.getversion.outputs.version }}.zip
+        # Path to the file to upload
+        path: ${{ steps.artifacto.outputs.artifact-url }}
+        # secrets.GITHUB_TOKEN
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
               
