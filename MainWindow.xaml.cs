@@ -162,7 +162,63 @@ namespace LiveryConverter2024
                 Properties.Settings.Default.Save();
             }
         }
-
+        private void generateKTX2()
+        {
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageSources\\SimObjects\\Airplanes\\png-2-ktx2\\common\\texture\\"));
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageDefinitions\\"));
+            XDocument xPkgDef = new XDocument(
+                new XElement("AssetPackage", new XAttribute("Version", "0.1.0"),
+                    new XElement("ItemSettings",
+                        new XElement("ContentType", "AIRCRAFT"),
+                        new XElement("Title", "LiveryConverter2024"),
+                        new XElement("Manufacturer", "Budzique|FlakNine"),
+                        new XElement("Creator", "Budzique|FlakNine")
+                    ),
+                    new XElement("Flags",
+                        new XElement("VisibleInStore", true),
+                        new XElement("CanBeReferenced", true)
+                    ),
+                    new XElement("AssetGroups",
+                        new XElement("AssetGroup", new XAttribute("Name", "LiveryConverter2024"),
+                            new XElement("Type", "ModularSimObject"),
+                            new XElement("Flags",
+                                new XElement("FSXCompatibility", false)
+                            ),
+                            new XElement("AssetDir", path + "PackageSources\\SimObjects\\Airplanes\\png-2-ktx2\\common\\texture\\")
+                            new XElement("outputDir", "TODO")
+                            )
+                        )
+                    )
+                );
+            xPkgDef.Save(path + "PackageDefinitions\\livery-converter-2024.xml");
+            XAttribute[] projAttrs =
+            {
+                new XAttribute("Version", 2),
+                new XAttribute("Name", "LiveryConverter2024"),
+                new XAttribute("FolderName", "Packages"),
+                new XAttribute("MetadataFolderName", "PackagesMetadata")
+            };
+            XDocument xProject = new XDocument(
+                new XElement("Project", projAttrs, 
+                    new XElement("OutputDirectory", "TODO"),
+                    new XElement("TemporaryOutputDirectory", "_PackageInt"),
+                    new XElement("Packages", 
+                        new XElement("Package", path+ "PackageDefinitions\\livery-converter-2024.xml")
+                    )
+                )
+            );
+            xProject.Save(path + "livery-converter-2024.xml");
+            // spawn proc:
+            //Properties.Settings.Default.sdkPath + "\tools\bin\fspackagetool.exe" -nopause -forcesteam -outputtoseparateconsole path + "livery-converter-2024.xml"
+            /**
+             * TODO:
+             *  finish package folder generation and move textures. (_PackageInt, PackagesMetadata, Packages) ?
+             *  spawn fspackagetool.exe from sdk and monitor for completion (mon proc FlightSimulator2024.exe?)
+             *  move new textures to desired location: Properties.Settings.Default.texturePath
+             *  run MSFSLayoutGenerator.exe
+             * 
+             * **/
+        }
         private void button4_Click(object sender, RoutedEventArgs e)
         {
             var fileDialog = new OpenFileDialog
