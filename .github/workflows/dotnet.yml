@@ -23,7 +23,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build
+      run: dotnet build --configuration Release
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.6.1
       with:
@@ -32,5 +32,18 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: bin/
         # The desired behavior if no files are found using the provided path.
-    
+    - name: Automated Releases
+      # You may pin to the exact commit or the version.
+      # uses: AnshKetchum/auto-changelog-release@c49aad1a8a077d9364be2e093a34bd4e3290dc0c
+      uses: AnshKetchum/auto-changelog-release@alpha-1
+      with:
+        # Github API / Enterprise Server URL
+        GITHUB_API_URL: https://api.github.com
+        # Path to the changelog.md
+        CHANGELOG_PATH_FILE: CHANGELOG.md
+        # Path to the VERSION.txt file
+        VERSION_PATH_FILE: VERSION.txt
+        # Personal access token to access Github API
+        GIT_PERSONAL_ACCESS_TOKEN:  ${{ secrets.GIT_KEY }}
+              
               
