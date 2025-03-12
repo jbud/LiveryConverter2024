@@ -55,6 +55,10 @@ jobs:
         body: ${{ steps.getCL.outputs.cl }}
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
         prerelease: true
+    - name: Zip
+      uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r artifact.zip bin
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
