@@ -6,8 +6,12 @@
 
 * Automate build of texconv.exe and embed into project instead of manually downloading from releases. from https://github.com/microsoft/DirectXTex
 * Credit owner of https://github.com/theflaknine/ImageToMSFSKTX2 for inspiration
-* Finish functionality, currently converts DDS to PNG, generates XML files and folder structures but cannot actually convert PNGs to KTX2 *YET*
-
+* Wipe files if upload clicked again. (ask for confirmation)
+* Move to desired texture location defined from inputs.
+* Grey out upload button until all forms filled.
+* tooltips
+* general UI updates
+* unknown bug fixes.
 
 ## Screenshot
 
