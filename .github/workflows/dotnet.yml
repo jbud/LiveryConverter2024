@@ -36,9 +36,6 @@ jobs:
     - name: Read VERSION file
       id: getversion
       run: echo "::set-output name=version::$(cat VERSION.txt)"
-    - name: Read VERSION file
-      id: getCL
-      run: echo "::set-output name=cl::$(cat CHANGELOG.md)"
     - name: Create a Release in a GitHub Action
       id: create_release
       env:
@@ -52,13 +49,15 @@ jobs:
         # The name of the release. For example, `Release v1.0.1`
         release_name: v${{ steps.getversion.outputs.version }}-alpha
         # Text describing the contents of the tag.
-        body: ${{ steps.getCL.outputs.cl }}
+        body_path: CHANGELOG.md
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
         prerelease: true
-    - name: Zip
-      uses: montudor/action-zip@v1
+    - name: Archive Release
+      uses: thedoctor0/zip-release@0.7.5
       with:
-        args: zip -qq -r artifact.zip bin
+        type: 'zip'
+        filename: 'release.zip'
+        path: bin/
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
@@ -66,7 +65,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./artifact.zip
+        asset_path: ./release.zip
         asset_name: v${{ steps.getversion.outputs.version }}-alpha.zip
         asset_content_type: application/zip
               
