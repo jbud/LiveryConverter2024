@@ -24,3 +24,13 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4.6.1
+      with:
+        # Artifact name
+        name: artifact
+        # A file, directory or wildcard pattern that describes what to upload
+        path: bin/
+        # The desired behavior if no files are found using the provided path.
+    
+              
