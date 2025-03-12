@@ -40,6 +40,7 @@ jobs:
       id: getCL
       run: echo "::set-output name=cl::$(cat CHANGELOG.md)"
     - name: Create a Release in a GitHub Action
+      id: create_release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # You may pin to the exact commit or the version.
@@ -54,15 +55,14 @@ jobs:
         body: ${{ steps.getCL.outputs.cl }}
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
         prerelease: true
-    - name: Upload to Release Action
-      # You may pin to the exact commit or the version.
-      # uses: Shopify/upload-to-release@c77c9b3e5d288adaef98a7007bf92340ec6ce03b
-      uses: Shopify/upload-to-release@v2.0.0
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        # Artifact name
-        name: ${{ steps.getversion.outputs.version }}.zip
-        # Path to the file to upload
-        path: ${{ steps.artifacto.outputs.artifact-url }}
-        # secrets.GITHUB_TOKEN
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: bin/artifact.zip
+        asset_name: v${{ steps.getversion.outputs.version }}-alpha.zip
+        asset_content_type: application/zip
               
