@@ -1,4 +1,8 @@
-# TODO
+# MSFS Livery Converter 2020 to 2024
+* Currently a work in progress, expect a release in the coming by end of March 2025.
+
+
+## TODO
 
 * Automate build of texconv.exe and embed into project instead of manually downloading from releases. from https://github.com/microsoft/DirectXTex
 * Credit owner of https://github.com/theflaknine/ImageToMSFSKTX2 for inspiration
