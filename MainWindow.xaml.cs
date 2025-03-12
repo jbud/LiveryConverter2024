@@ -44,6 +44,7 @@ namespace LiveryConverter2024
         private readonly string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "com.budzique.livery-converter.app\\");
         private Process p1;
         private Process p2;
+        private Process p3;
         private void clearPath(System.IO.DirectoryInfo directory)
         {
             foreach (System.IO.FileInfo file in directory.GetFiles()) file.Delete();
@@ -56,10 +57,8 @@ namespace LiveryConverter2024
             debug.ScrollToEnd();
             System.IO.Directory.CreateDirectory(path);
             clearPath(new DirectoryInfo(path));
-            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "ALBD\\"));
-            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "COMP\\"));
-            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "DECAL\\"));
-            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "NORM\\"));
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\"));
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageDefinitions\\"));
             System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "DDSINPUT\\"));
             System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "TEMP\\"));
             Assembly asm = Assembly.GetExecutingAssembly();
@@ -164,8 +163,6 @@ namespace LiveryConverter2024
         }
         private void generateKTX2()
         {
-            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageSources\\SimObjects\\Airplanes\\png-2-ktx2\\common\\texture\\"));
-            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageDefinitions\\"));
             XDocument xPkgDef = new XDocument(
                 new XElement("AssetPackage", new XAttribute("Version", "0.1.0"),
                     new XElement("ItemSettings",
@@ -184,8 +181,8 @@ namespace LiveryConverter2024
                             new XElement("Flags",
                                 new XElement("FSXCompatibility", false)
                             ),
-                            new XElement("AssetDir", path + "PackageSources\\SimObjects\\Airplanes\\png-2-ktx2\\common\\texture\\")
-                            new XElement("outputDir", "TODO")
+                            new XElement("AssetDir", "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\"),
+                            new XElement("outputDir", "SimObjects\\Airplanes\\livery-converter-2024\\")
                             )
                         )
                     )
@@ -200,16 +197,32 @@ namespace LiveryConverter2024
             };
             XDocument xProject = new XDocument(
                 new XElement("Project", projAttrs, 
-                    new XElement("OutputDirectory", "TODO"),
+                    new XElement("OutputDirectory", "."),
                     new XElement("TemporaryOutputDirectory", "_PackageInt"),
                     new XElement("Packages", 
-                        new XElement("Package", path+ "PackageDefinitions\\livery-converter-2024.xml")
+                        new XElement("Package", "PackageDefinitions\\livery-converter-2024.xml")
                     )
                 )
             );
             xProject.Save(path + "livery-converter-2024.xml");
-            // spawn proc:
-            //Properties.Settings.Default.sdkPath + "\tools\bin\fspackagetool.exe" -nopause -forcesteam -outputtoseparateconsole path + "livery-converter-2024.xml"
+
+            string stearing = " ";
+            if (Properties.Settings.Default.store == "Steam")
+            {
+                stearing = " -forceSteam ";
+            }
+            using (p3 = new Process()) 
+            {
+                p3.StartInfo.FileName = Properties.Settings.Default.sdkPath + "\\tools\\bin\\fspackagetool.exe";
+                p3.StartInfo.Arguments = "-nopause"+stearing+ "-outputtoseparateconsole " + path + "livery-converter-2024.xml";
+                p3.StartInfo.RedirectStandardOutput = true;
+                p3.Start();
+                string output = p3.StandardOutput.ReadToEnd();
+                p3.WaitForExit();
+                debug.AppendText(output);
+                debug.ScrollToEnd();
+            }
+            
             /**
              * TODO:
              *  finish package folder generation and move textures. (_PackageInt, PackagesMetadata, Packages) ?
@@ -264,6 +277,9 @@ namespace LiveryConverter2024
                 FileInfo[] i = d.GetFiles();
                 debug.AppendText("Sorting textures\n");
                 debug.ScrollToEnd();
+
+                string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
+
                 foreach (FileInfo f in i)
                 {
                     string shortFileName = f.Name;
@@ -279,8 +295,8 @@ namespace LiveryConverter2024
                                 new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH")
                             )
                         );
-                        xmldoc.Save(path + "ALBD\\" + shortNewName + ".xml");
-                        File.Move(file, path + "ALBD\\" + shortNewName);
+                        xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
+                        File.Move(file, pkgSourceDir + shortNewName);
                     }
                     else
                     if (file.Contains("COMP"))
@@ -292,8 +308,8 @@ namespace LiveryConverter2024
                                 new XElement("ForceNoAlpha", true)
                             )
                         );
-                        xmldoc.Save(path + "COMP\\" + shortNewName + ".xml");
-                        File.Move(file, path + "COMP\\" + shortNewName);
+                        xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
+                        File.Move(file, pkgSourceDir + shortNewName);
                     }
                     else
                     if (file.Contains("DECAL"))
@@ -304,8 +320,8 @@ namespace LiveryConverter2024
                                 new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH")
                             )
                         );
-                        xmldoc.Save(path + "DECAL\\" + shortNewName + ".xml");
-                        File.Move(file, path + "DECAL\\" + shortNewName);
+                        xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
+                        File.Move(file, pkgSourceDir + shortNewName);
                     }
                     else
                     if (file.Contains("NORM"))
@@ -316,10 +332,11 @@ namespace LiveryConverter2024
                                 new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH")
                             )
                         );
-                        xmldoc.Save(path + "NORM\\" + shortNewName + ".xml");
-                        File.Move(file, path + "NORM\\" + shortNewName);
+                        xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
+                        File.Move(file, pkgSourceDir + shortNewName);
                     }
                 }
+                generateKTX2();
             }
 
         }
