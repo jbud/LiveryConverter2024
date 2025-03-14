@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LiveryConverter2024"
         mc:Ignorable="d"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-        Title="MSFS 2020 to MSFS 2024 Livery Converter" Height="450" Width="800">
+        Title="MSFS 2020 to MSFS 2024 Livery Converter" Height="450" Width="800" ResizeMode="NoResize">
     <Grid Background="#FF1A1A1A">
         <Grid.RowDefinitions>
             <RowDefinition Height="22*"/>
@@ -38,14 +38,14 @@
         <Button x:Name="button2" Content="..." Click="button2_Click" Grid.Column="3" Grid.Row="3" HorizontalAlignment="Center" Height="32" Width="33"/>
         <TextBox x:Name="layoutGenPath" Margin="10,2,10,2" TextWrapping="Wrap" Text="..." Grid.Column="2" Grid.Row="4"/>
         <Button x:Name="button3" Content="..." Click="button3_Click" Grid.Column="3" Grid.Row="4" HorizontalAlignment="Center" Height="32" Width="33"/>
-        <TextBox x:Name="debug" TextWrapping="Wrap" SnapsToDevicePixels="True" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="7" Margin="5,5,5,15"/>
+        <TextBox x:Name="debug" TextWrapping="Wrap" SnapsToDevicePixels="True" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="7" Margin="5,5,5,15" IsReadOnly="True"/>
         <Label x:Name="label" Content="Project Directory" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Height="23" Width="104" Grid.Column="1"/>
         <Label x:Name="label_Copy" Content="Texture Directory" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Height="23" Width="105" Grid.Column="1"/>
         <Label x:Name="label_Copy1" Content="MSFS24 SDK Directory" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Height="23" Width="139" Grid.Column="1"/>
         <Label x:Name="label_Copy2" Content="Layout Generator Directory" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.474,0.567" Grid.Row="4" Grid.Column="1" Height="22" Width="168"/>
         <Label x:Name="label_Copy3" Content="Game Version" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.474,0.567" Grid.Row="5" Height="23" Width="85" Grid.Column="1"/>
         <Label x:Name="label_Copy4" Content="Debug Output:" HorizontalAlignment="Left" VerticalAlignment="Center" RenderTransformOrigin="0.474,0.567" Grid.Column="1" Grid.Row="6"/>
-        <ui:Button x:Name="button4" Content="Upload MSFS 2020 Textures" Click="button4_Click" Grid.Column="4" HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Stretch" Margin="5,5,5,5"/>
+        <ui:Button x:Name="uploadButton" Content="Upload MSFS 2020 Textures" Click="button4_Click" MouseEnter="uploadButton_MouseEnter" Grid.Column="4" HorizontalAlignment="Stretch" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Stretch" Margin="5,5,5,5" ToolTip="Ready to upload textures!"/>
         <ui:ProgressRing x:Name="Progress" Grid.Column="4" HorizontalAlignment="Center" Grid.Row="4" VerticalAlignment="Center" Grid.RowSpan="2" Visibility="Hidden" Progress="0"/>
 
     </Grid>

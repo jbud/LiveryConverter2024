@@ -1,23 +1,9 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Packaging;
 using System.Reflection;
-using System.Security.Cryptography.Pkcs;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.TextFormatting;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
-using Wpf.Ui.Controls;
 
 namespace LiveryConverter2024
 {
@@ -29,21 +15,25 @@ namespace LiveryConverter2024
         public MainWindow()
         {
             InitializeComponent();
-            Prepare_Dirs();
+            PrepareDirs();
             projectFolder.Text = Properties.Settings.Default.projectPath;
             textureFolder.Text = Properties.Settings.Default.texturePath;
             sdkPath.Text = Properties.Settings.Default.sdkPath;
             layoutGenPath.Text = Properties.Settings.Default.layoutGenPath;
-            var t_cb = Properties.Settings.Default.store;
-            switch (t_cb)
+            string? t_cb = Properties.Settings.Default.store;
+            if (Properties.Settings.Default.texturePath == "")
             {
-                case "MS Store":
-                    comboBox.SelectedIndex = 1;
-                    break;
-                default:
-                    comboBox.SelectedIndex = 0;
-                    break;
+                Dispatcher.Invoke(() =>
+                {
+                    uploadButton.IsEnabled = false;
+                    uploadButton.ToolTip = "Texture Path is required for conversion. Please add a texture path.";
+                });
             }
+            comboBox.SelectedIndex = t_cb switch
+            {
+                "MS Store" => 1,
+                _ => 0,
+            };
         }
 
         public string DebugConsole
@@ -54,11 +44,26 @@ namespace LiveryConverter2024
                 debug.ScrollToEnd();
             }
         }
+
+        public void ConsoleWriteLine(string line)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                DebugConsole = line + "\n";
+            });
+        }
+
         private readonly string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "com.budzique.livery-converter.app\\");
 
-        private void clearPath(System.IO.DirectoryInfo directory)
+        private void ClearPath(System.IO.DirectoryInfo directory)
         {
-            foreach (System.IO.FileInfo file in directory.GetFiles()) file.Delete();
+            foreach (System.IO.FileInfo file in directory.GetFiles()) 
+            {
+                if (!file.Name.ToString().Contains("texconv.exe"))
+                { 
+                    file.Delete();    
+                }
+            }
             foreach (System.IO.DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
             System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\"));
             System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "PackageDefinitions\\"));
@@ -66,18 +71,17 @@ namespace LiveryConverter2024
             System.IO.Directory.CreateDirectory(System.IO.Path.Combine(path, "TEMP\\"));
         }
 
-        private void Prepare_Dirs()
+        private void PrepareDirs()
         {
             System.IO.Directory.CreateDirectory(path);
-            Dispatcher.Invoke(() =>
-            {
-                DebugConsole = "app directory created at: \n" + path + "\n";
-            });
-            clearPath(new DirectoryInfo(path));
-            Dispatcher.Invoke(() =>
-            {
-                DebugConsole = "Creating project structure...\n";
-            });
+
+            ConsoleWriteLine("App directory created at");
+            ConsoleWriteLine(path);
+
+            ClearPath(new DirectoryInfo(path));
+
+            ConsoleWriteLine("Creating project structure...");
+            
             Assembly asm = Assembly.GetExecutingAssembly();
             string[] resources = asm.GetManifestResourceNames();
 
@@ -85,8 +89,7 @@ namespace LiveryConverter2024
             {
                 if (r.Contains("texconv.exe"))
                 {
-                    debug.AppendText("extracting texconv.exe from resources!\n");
-                    debug.ScrollToEnd();
+                    ConsoleWriteLine("Extracting texconv.exe from resources!");
                     string filename = r.Replace("LiveryConverter2024.includes.", "");
                     Stream? asmStream = GetType().Assembly.GetManifestResourceStream(r);
                     if (asmStream != null)
@@ -134,6 +137,11 @@ namespace LiveryConverter2024
                 textureFolder.Text = folderName;
                 Properties.Settings.Default.texturePath = folderName;
                 Properties.Settings.Default.Save();
+                Dispatcher.Invoke(() =>
+                {
+                    uploadButton.IsEnabled = true;
+                    uploadButton.ToolTip = "Ready to upload textures!";
+                });
             }
         }
 
@@ -179,23 +187,20 @@ namespace LiveryConverter2024
             }
         }
 
-        private void generateXMLs()
+        private void GenerateXMLs()
         {
             DirectoryInfo d = new DirectoryInfo(path + "TEMP");
             FileInfo[] i = d.GetFiles();
-            Dispatcher.Invoke(() =>
-            {
-                DebugConsole = "Sorting Textures... Generating XMLs...\n";
-            });
+
+            ConsoleWriteLine("Sorting Textures... Generating XMLs...");
+            
             string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
 
             foreach (FileInfo f in i)
             {
                 string shortFileName = f.Name;
                 string shortNewName = shortFileName.Substring(0, shortFileName.Length - 4);
-                string ext = f.Extension;
                 string file = f.FullName;
-                //File.Move(file, newFile);
                 if (file.Contains("ALBD"))
                 {
                     XDocument xmldoc = new XDocument(
@@ -245,6 +250,7 @@ namespace LiveryConverter2024
                     File.Move(file, pkgSourceDir + shortNewName);
                 }
             }
+
             XDocument xPkgDef = new XDocument(
                 new XElement("AssetPackage", new XAttribute("Version", "0.1.0"),
                     new XElement("ItemSettings",
@@ -269,7 +275,9 @@ namespace LiveryConverter2024
                         )
                     )
                 );
+            
             xPkgDef.Save(path + "PackageDefinitions\\livery-converter-2024.xml");
+            
             XAttribute[] projAttrs =
             {
                 new XAttribute("Version", 2),
@@ -286,80 +294,102 @@ namespace LiveryConverter2024
                     )
                 )
             );
+
             xProject.Save(path + "livery-converter-2024.xml");
         }
 
         private async void ProcessHandler()
         {
-            this.Dispatcher.Invoke((Action)(() => {
+            bool error = false;
+            Dispatcher.Invoke(() => {
                 Progress.Visibility = Visibility.Visible;
                 Progress.IsIndeterminate = true;
-            }));
-            ExeClass exeClass = new();
-            await exeClass.SpawnProc(path + "texconv.exe", "-r:keep " + path + "DDSINPUT\\*.png.dds -o " + path + "TEMP -f:rgba -ft:png", this);
-            await exeClass.SpawnProc(path + "texconv.exe", "-r:keep " + path + "DDSINPUT\\*.tif.dds -o " + path + "TEMP -f:rgba -ft:tif", this);
-            generateXMLs();
+            });
+
+            ExeClass exeClass = new ExeClass(this);
+            await exeClass.SpawnProc(path + "texconv.exe", "-r:keep " + path + "DDSINPUT\\*.png.dds -o " + path + "TEMP -f:rgba -ft:png");
+            await exeClass.SpawnProc(path + "texconv.exe", "-r:keep " + path + "DDSINPUT\\*.tif.dds -o " + path + "TEMP -f:rgba -ft:tif");
+            
+            GenerateXMLs();
+
             string stearing = " ";
             if (Properties.Settings.Default.store == "Steam")
             {
                 stearing = " -forceSteam ";
             }
+
+            ConsoleWriteLine("Spawning MSFS2024 Package Manager, please wait...");
+            if (File.Exists(Properties.Settings.Default.sdkPath + "\\tools\\bin\\fspackagetool.exe"))
+            {
+                await exeClass.SpawnProc(Properties.Settings.Default.sdkPath + "\\tools\\bin\\fspackagetool.exe", "-nopause -outputtoseparateconsole " + stearing + path + "livery-converter-2024.xml");
+
+                await exeClass.ProcMon("FlightSimulator2024");
+            }
+            else
+            {
+                string message = "fspackagetool.exe not found! check MSFS SDK 2024 Path! is it installed?";
+                ConsoleWriteLine(message);
+                MessageBox.Show(message, "Critical Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                error = true;
+            }
+            if (!error)
+            {
+                DirectoryInfo d = new DirectoryInfo(path + "Packages\\livery-converter-2024\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture");
+                FileInfo[] i = d.GetFiles();
+
+                ConsoleWriteLine("Moving textures to project path...");
+
+                string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
+
+                foreach (FileInfo f in i)
+                {
+                    string target = Properties.Settings.Default.texturePath + "\\" + f.Name;
+                    if (File.Exists(target))
+                    {
+                        ConsoleWriteLine(target + " Already exists! skipping...");
+                    }
+                    else
+                    {
+                        File.Copy(f.FullName, target);
+                    }
+                }
+                if (File.Exists(Properties.Settings.Default.projectPath + "\\layout.json"))
+                {
+                    ConsoleWriteLine("layout.json found! running MSFSLayoutGenerator.exe...");
+                    if (File.Exists(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe"))
+                    {
+                        await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json");
+                    }
+                    else
+                    {
+                        ConsoleWriteLine("Error: MSFSLayoutGenerator.exe not found! Layout not updated...");
+                        ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
+                    }
+                }
+                else
+                {
+                    ConsoleWriteLine("Unable to locate layout.json in Project Path");
+                    ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
+                }
+                ConsoleWriteLine("Conversion Complete!");
+            } 
+            else
+            {
+                ConsoleWriteLine("Conversion failed due to critical error!");
+            }
             Dispatcher.Invoke(() =>
             {
-                DebugConsole = "Spawning MSFS2024 Package Manager, Please Wait...\n";
-            });
-
-            await exeClass.SpawnProc(Properties.Settings.Default.sdkPath + "\\tools\\bin\\fspackagetool.exe", "-nopause -outputtoseparateconsole " + stearing + path + "livery-converter-2024.xml", this);
-            await exeClass.ProcMon("FlightSimulator2024", this);
-            this.Dispatcher.Invoke((Action)(() => {
                 Progress.Visibility = Visibility.Hidden;
-            }));
-
-            // Copy output from : path + Packages\\livery-converter-2024\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\
-            // to: Properties.Settings.Default.texturePath
-
-            DirectoryInfo d = new DirectoryInfo(path + "Packages\\livery-converter-2024\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture");
-            FileInfo[] i = d.GetFiles();
-            Dispatcher.Invoke(() =>
-            {
-                DebugConsole = "Moving textures to project path...\n";
+                Progress.IsIndeterminate = false;
             });
-            string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
-
-            foreach (FileInfo f in i)
-            {
-                //f.MoveTo(Properties.Settings.Default.texturePath+"\\");
-                File.Copy(f.FullName, Properties.Settings.Default.texturePath + "\\" + f.Name);
-            }
-            if (File.Exists(Properties.Settings.Default.projectPath + "\\layout.json"))
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    DebugConsole = "layout.json Found, running MSFSLayoutGenerator...\n";
-                });
-                await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json", this);
-
-            }
-            else 
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    DebugConsole = "Unable to locate layout.json in Project Path\nConverted textures can be found here: "+Properties.Settings.Default.texturePath+"\n";
-                });
-            }
-
-                // invoke LayoutGenerator on layout.json in Properties.Settings.Default.projectPath
-
-                Dispatcher.Invoke(() =>
-                {
-                    DebugConsole = "Conversion Complete!\n";
-                });
+            
         }
 
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            //Prepare_Dirs();
+            ClearPath(new DirectoryInfo(path)); // cleanup work directory here again (in-case app isn't closed before next use).
+            
             var fileDialog = new OpenFileDialog
             {
                 Filter = "Direct Draw Surface files (*.DDS)|*.DDS",
@@ -367,18 +397,17 @@ namespace LiveryConverter2024
             };
             if (fileDialog.ShowDialog() == true)
             {
-                
-                
                 foreach (string f in fileDialog.FileNames)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        DebugConsole = "Uploading textures to project...\n";
-                    });
+                    ConsoleWriteLine("Uploading textures to project...");
                     File.Copy(f, path + "DDSINPUT\\" + System.IO.Path.GetFileName(f));
                 }
                 ProcessHandler();
             }
+        }
+
+        private void uploadButton_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
 
         }
     }

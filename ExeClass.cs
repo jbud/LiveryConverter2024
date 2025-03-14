@@ -1,49 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace LiveryConverter2024
 {
-    internal class ExeClass
+    internal class ExeClass(MainWindow mainWindowRef)
     {
-        public async Task SpawnProc(string proc, string args, MainWindow dbg)
+        public MainWindow mainWindowRef = mainWindowRef;
+
+        private void consoleWriteLine(string line)
         {
-            using (Process? p2 = new Process())
+            mainWindowRef.Dispatcher.Invoke(() =>
             {
-                p2.StartInfo.FileName = proc;
-                p2.StartInfo.Arguments = args;
-                p2.StartInfo.RedirectStandardOutput = true;
-                p2.StartInfo.CreateNoWindow = true;
-                p2.StartInfo.UseShellExecute = false;
-                p2.EnableRaisingEvents = true;
-                p2.OutputDataReceived += (object sender, DataReceivedEventArgs args) => 
-                {
-                    dbg.Dispatcher.Invoke(() =>
-                    {
-                        dbg.DebugConsole = " " + args.Data + "\n";
-                    });
-                    
-                };
-                p2.Start();
-                p2.BeginOutputReadLine();
-                await p2.WaitForExitAsync();
-            }
+                mainWindowRef.DebugConsole = line + "\n";
+            });
         }
-        public async Task ProcMon(string processName, MainWindow dbg)
+
+        public async Task SpawnProc(string proc, string args)
+        {
+            using Process? p2 = new Process();
+            p2.StartInfo.FileName = proc;
+            p2.StartInfo.Arguments = args;
+            p2.StartInfo.RedirectStandardOutput = true;
+            p2.StartInfo.CreateNoWindow = true;
+            p2.StartInfo.UseShellExecute = false;
+            p2.EnableRaisingEvents = true;
+            p2.OutputDataReceived += (object sender, DataReceivedEventArgs args) =>
+            {
+                consoleWriteLine(" " + args.Data);
+            };
+            p2.Start();
+            p2.BeginOutputReadLine();
+            await p2.WaitForExitAsync();
+        }
+        public async Task ProcMon(string processName)
         {
             Thread.Sleep(2000);
             Process[]? processes = Process.GetProcessesByName(processName);
             foreach (Process p in processes)
             {
-                dbg.Dispatcher.Invoke(() =>
-                {
-                    dbg.DebugConsole = "Found Process " + p.ProcessName + " Waiting for exit...\n";
-                });
+                consoleWriteLine("Found Process " + p.ProcessName + " Waiting for exit...");
                 await p.WaitForExitAsync();
-                
             }
         }
     }
