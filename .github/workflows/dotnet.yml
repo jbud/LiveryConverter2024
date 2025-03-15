@@ -52,7 +52,7 @@ jobs:
         # Text describing the contents of the tag.
         body_path: CHANGELOG.md
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
-        prerelease: true
+        prerelease: false
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.5
       with:
