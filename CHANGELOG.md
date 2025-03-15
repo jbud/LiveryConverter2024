@@ -1,6 +1,9 @@
 # 0.1.2
-- Automatic detection of JSON file for DDS texture format. Fallback to filename detection if not (NF)
-- 
+- Automatic detection of JSON file for DDS texture format. Fallback to filename detection if not
+- Refactor GenerateXMLs() to handle JJSON and some minor efficiencies.
+- Cleanup code by moving some unnecessary repeated items to either subroutine or outside loops.
+- Check for KTX2 conversion failure. Unspecified error for now.
+- Add logging.
 
 # 0.1.1
 - Cleanup Code.

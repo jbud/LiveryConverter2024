@@ -1,10 +1,12 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.IO;
+using System.IO.Packaging;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LiveryConverter2024
 {
@@ -37,6 +39,14 @@ namespace LiveryConverter2024
             };
         }
 
+        class TextureType
+        {
+            public static string ALBD = "MTL_BITMAP_DECAL0";
+            public static string COMP = "MTL_BITMAP_METAL_ROUGH_AO";
+            public static string NORM = "MTL_BITMAP_NORMAL";
+            // DECAL skipped, it follows ALBD
+        };
+
         public string DebugConsole
         {
             get { return debug.Text; }
@@ -60,7 +70,7 @@ namespace LiveryConverter2024
         {
             foreach (System.IO.FileInfo file in directory.GetFiles()) 
             {
-                if (!file.Name.ToString().Contains("texconv.exe"))
+                if (!file.Name.ToString().Contains("texconv.exe") && !file.Name.ToString().Contains(".log"))
                 { 
                     file.Delete();    
                 }
@@ -197,61 +207,53 @@ namespace LiveryConverter2024
             
             string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
 
-
-            /////// TODO: Add json check to each if isJsonAvail = true
-            /////// TODO: replace generation of XML with GenerateSingleXML(path, file, type)
             foreach (FileInfo f in i)
             {
                 string shortFileName = f.Name;
                 string shortNewName = shortFileName.Substring(0, shortFileName.Length - 4);
                 string file = f.FullName;
-                if (file.Contains("ALBD"))
+                bool jsonFailure = false;
+
+                File.Move(file, pkgSourceDir + shortNewName);
+                
+                if (isJsonAvail) 
                 {
-                    XDocument xmldoc = new XDocument(
-                        new XElement("BitmapConfiguration",
-                            new XElement("BitmapSlot", "MTL_BITMAP_DECAL0"),
-                            new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH")
-                        )
-                    );
-                    xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
-                    File.Move(file, pkgSourceDir + shortNewName);
+                    string type = UnpackJson(path + "DDSINPUT\\" + shortNewName + ".DDS.json"); // Infer original name due to timing happening after conversion to PNG.
+                    switch (type)
+                    {
+                        case "NORM":
+                            GenerateSingleXML(pkgSourceDir, shortNewName + ".xml", TextureType.NORM);
+                            break;
+                        case "COMP":
+                            GenerateSingleXML(pkgSourceDir, shortNewName + ".xml", TextureType.COMP);
+                            break;
+                        case "ALBD":
+                        case "DECAL":
+                            GenerateSingleXML(pkgSourceDir, shortNewName + ".xml", TextureType.ALBD);// Use ALBD settings for DECAL
+                            break;
+                        case "FAIL":
+                        default:
+                            jsonFailure = true;
+                            break;
+                    }
                 }
-                else
-                if (file.Contains("COMP"))
+
+                if (!isJsonAvail || jsonFailure) // fallback to filename check if json fails...
                 {
-                    XDocument xmldoc = new XDocument(
-                        new XElement("BitmapConfiguration",
-                            new XElement("BitmapSlot", "MTL_BITMAP_METAL_ROUGH_AO"),
-                            new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH"),
-                            new XElement("ForceNoAlpha", true)
-                        )
-                    );
-                    xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
-                    File.Move(file, pkgSourceDir + shortNewName);
-                }
-                else
-                if (file.Contains("DECAL"))
-                {
-                    XDocument xmldoc = new XDocument(
-                        new XElement("BitmapConfiguration",
-                            new XElement("BitmapSlot", "MTL_BITMAP_DECAL0"),
-                            new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH")
-                        )
-                    );
-                    xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
-                    File.Move(file, pkgSourceDir + shortNewName);
-                }
-                else
-                if (file.Contains("NORM"))
-                {
-                    XDocument xmldoc = new XDocument(
-                        new XElement("BitmapConfiguration",
-                            new XElement("BitmapSlot", "MTL_BITMAP_NORMAL"),
-                            new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH")
-                        )
-                    );
-                    xmldoc.Save(pkgSourceDir + shortNewName + ".xml");
-                    File.Move(file, pkgSourceDir + shortNewName);
+                    if (file.Contains("ALBD") || file.Contains("DECAL"))
+                    {
+                        GenerateSingleXML(pkgSourceDir, shortNewName + ".xml", TextureType.ALBD);// Use ALBD settings for DECAL
+                    }
+                    else
+                    if (file.Contains("COMP"))
+                    {
+                        GenerateSingleXML(pkgSourceDir, shortNewName + ".xml", TextureType.COMP);
+                    }
+                    else
+                    if (file.Contains("NORM"))
+                    {
+                        GenerateSingleXML(pkgSourceDir, shortNewName + ".xml", TextureType.NORM);
+                    }
                 }
             }
 
@@ -302,14 +304,6 @@ namespace LiveryConverter2024
             xProject.Save(path + "livery-converter-2024.xml");
         }
 
-        class TextureType
-        {
-            public static string ALBD = "MTL_BITMAP_DECAL0";
-            public static string COMP = "MTL_BITMAP_METAL_ROUGH_AO";
-            public static string NORM = "MTL_BITMAP_NORMAL";
-            // DECAL skipped, it follows ALBD
-        };
-
         private void GenerateSingleXML(string dir, string file, string tex)
         {
             XDocument xmldoc = new XDocument(
@@ -320,30 +314,33 @@ namespace LiveryConverter2024
             );
             if (tex == TextureType.COMP)
             {
-#pragma warning disable CS8602
-                xmldoc.Root.Element("BitmapConfiguration").Add(new XElement("ForceNoAlpha", true));
-#pragma warning restore CS8602
+                xmldoc.Descendants("BitmapConfiguration").First().Add(new XElement("ForceNoAlpha", true));
             }
-            xmldoc.Save(dir + file + ".xml");
+            xmldoc.Save(dir + file);
         }
 
         private string UnpackJson(string filename)
         {
             try
             {
+                ConsoleWriteLine("Scanning included DDS.json file...");
                 string fileContents = File.ReadAllText(filename);
                 dynamic stuff = JsonConvert.DeserializeObject(fileContents);
-                string[] flags = stuff.Flags;
+                string[] flags = stuff.Flags.ToObject<string[]>();
                 foreach (string f in flags)
                 {
+                    ConsoleWriteLine("Found flag: " + f + "!");
                     switch (f)
                     {
                         case "FL_BITMAP_METAL_ROUGH_AO_DATA":
+                            ConsoleWriteLine("Inferring Type COMP!");
                             return TextureType.COMP;
                         case "FL_BITMAP_TANGENT_DXT5N":
+                            ConsoleWriteLine("Inferring Type NORM!");
                             return TextureType.NORM;
                     }
                 }
+                ConsoleWriteLine("Inferring Type ALBD!");
                 return TextureType.ALBD;
             }
             catch (Exception err)
@@ -367,7 +364,7 @@ namespace LiveryConverter2024
             if (isJsonAvail)
             {
                 // TODO special handling
-                GenerateXMLs();
+                GenerateXMLs(true);
             }
             else
             {
@@ -395,44 +392,61 @@ namespace LiveryConverter2024
             }
             if (!error)
             {
-                DirectoryInfo d = new DirectoryInfo(path + "Packages\\livery-converter-2024\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture");
-                FileInfo[] i = d.GetFiles();
-
-                ConsoleWriteLine("Moving textures to project path...");
-
-                string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
-
-                foreach (FileInfo f in i)
+                if (File.Exists(path + "Packages\\livery-converter-2024\\manifest.json"))
                 {
-                    string target = Properties.Settings.Default.texturePath + "\\" + f.Name;
-                    if (File.Exists(target))
+                    DirectoryInfo d = new DirectoryInfo(path + "Packages\\livery-converter-2024\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture");
+                    FileInfo[] i = d.GetFiles();
+
+                    ConsoleWriteLine("Moving textures to project path...");
+
+                    string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
+
+                    foreach (FileInfo f in i)
                     {
-                        ConsoleWriteLine(target + " Already exists! skipping...");
+                        string target = Properties.Settings.Default.texturePath + "\\" + f.Name;
+                        if (File.Exists(target))
+                        {
+                            ConsoleWriteLine(target + " Already exists! skipping...");
+                        }
+                        else
+                        {
+                            File.Copy(f.FullName, target);
+                        }
+                    }
+                    if (File.Exists(Properties.Settings.Default.projectPath + "\\layout.json"))
+                    {
+                        ConsoleWriteLine("layout.json found! running MSFSLayoutGenerator.exe...");
+                        if (File.Exists(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe"))
+                        {
+                            await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json");
+                        }
+                        else
+                        {
+                            ConsoleWriteLine("Error: MSFSLayoutGenerator.exe not found! Layout not updated...");
+                            ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
+                        }
                     }
                     else
                     {
-                        File.Copy(f.FullName, target);
-                    }
-                }
-                if (File.Exists(Properties.Settings.Default.projectPath + "\\layout.json"))
-                {
-                    ConsoleWriteLine("layout.json found! running MSFSLayoutGenerator.exe...");
-                    if (File.Exists(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe"))
-                    {
-                        await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json");
-                    }
-                    else
-                    {
-                        ConsoleWriteLine("Error: MSFSLayoutGenerator.exe not found! Layout not updated...");
+                        ConsoleWriteLine("Unable to locate layout.json in Project Path");
                         ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
                     }
+                    ConsoleWriteLine("Conversion Complete!");
                 }
                 else
                 {
-                    ConsoleWriteLine("Unable to locate layout.json in Project Path");
-                    ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
+                    ConsoleWriteLine("Unspecified Error: fspackagetool.exe Failed...");
+                    ConsoleWriteLine("Logs from fspackagetool can be found in the same directory as FlightSimulator2024.exe under the name: BuilderLogError.txt");
+                    //string logpath = "";
+                    //if (Properties.Settings.Default.store == "Steam")
+                    //{
+
+                    //}
+                    //else
+                    //{
+                    //    logpath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "Packages\\Microsoft.Limitless_8wekyb3d8bbwe\\LocalCache\\BuilderLogError.txt";
+                    //}
                 }
-                ConsoleWriteLine("Conversion Complete!");
             } 
             else
             {
@@ -443,7 +457,9 @@ namespace LiveryConverter2024
                 Progress.Visibility = Visibility.Hidden;
                 Progress.IsIndeterminate = false;
             });
-            
+            string t = DateTime.Now.ToString(@"MM-dd-yyyy-h-mm-tt");
+            File.WriteAllText(path + "LC24-" + t + ".log", DebugConsole);
+
         }
 
 
@@ -463,10 +479,10 @@ namespace LiveryConverter2024
                 {
                     ConsoleWriteLine("Uploading textures to project...");
                     File.Copy(f, path + "DDSINPUT\\" + System.IO.Path.GetFileName(f));
-                    // Grab json files for typing if not exists
+                    // Grab json files for typing if exists
                     if (File.Exists(f + ".json")) 
                     {
-                        File.Copy(f+".json", path + "DDSINPUT\\" + System.IO.Path.GetFileName(f));
+                        File.Copy(f+".json", path + "DDSINPUT\\" + System.IO.Path.GetFileName(f) + ".json");
                         isJsonAvail = true;
                     }
                 }
