@@ -6,7 +6,7 @@ namespace LiveryConverter2024
     {
         public MainWindow mainWindowRef = mainWindowRef;
 
-        private void consoleWriteLine(string line)
+        private void ConsoleWriteLine(string line)
         {
             mainWindowRef.Dispatcher.Invoke(() =>
             {
@@ -25,7 +25,7 @@ namespace LiveryConverter2024
             p2.EnableRaisingEvents = true;
             p2.OutputDataReceived += (object sender, DataReceivedEventArgs args) =>
             {
-                consoleWriteLine(" " + args.Data);
+                ConsoleWriteLine(" " + args.Data);
             };
             p2.Start();
             p2.BeginOutputReadLine();
@@ -37,7 +37,7 @@ namespace LiveryConverter2024
             Process[]? processes = Process.GetProcessesByName(processName);
             foreach (Process p in processes)
             {
-                consoleWriteLine("Found Process " + p.ProcessName + " Waiting for exit...");
+                ConsoleWriteLine("Found Process " + p.ProcessName + " Waiting for exit...");
                 await p.WaitForExitAsync();
             }
         }

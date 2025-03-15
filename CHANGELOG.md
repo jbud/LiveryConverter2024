@@ -1,3 +1,7 @@
+# 0.1.2
+- Automatic detection of JSON file for DDS texture format. Fallback to filename detection if not (NF)
+- 
+
 # 0.1.1
 - Cleanup Code.
 - Cleaner 'debug' console window call.

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -187,7 +188,7 @@ namespace LiveryConverter2024
             }
         }
 
-        private void GenerateXMLs()
+        private void GenerateXMLs(bool isJsonAvail = false)
         {
             DirectoryInfo d = new DirectoryInfo(path + "TEMP");
             FileInfo[] i = d.GetFiles();
@@ -196,6 +197,9 @@ namespace LiveryConverter2024
             
             string pkgSourceDir = path + "PackageSources\\SimObjects\\Airplanes\\livery-converter-2024\\common\\texture\\";
 
+
+            /////// TODO: Add json check to each if isJsonAvail = true
+            /////// TODO: replace generation of XML with GenerateSingleXML(path, file, type)
             foreach (FileInfo f in i)
             {
                 string shortFileName = f.Name;
@@ -298,7 +302,58 @@ namespace LiveryConverter2024
             xProject.Save(path + "livery-converter-2024.xml");
         }
 
-        private async void ProcessHandler()
+        class TextureType
+        {
+            public static string ALBD = "MTL_BITMAP_DECAL0";
+            public static string COMP = "MTL_BITMAP_METAL_ROUGH_AO";
+            public static string NORM = "MTL_BITMAP_NORMAL";
+            // DECAL skipped, it follows ALBD
+        };
+
+        private void GenerateSingleXML(string dir, string file, string tex)
+        {
+            XDocument xmldoc = new XDocument(
+                new XElement("BitmapConfiguration",
+                    new XElement("BitmapSlot", "MTL_BITMAP_DECAL0"),
+                    new XElement("UserFlags", new XAttribute("type", "_DEFAULT"), "QUALITYHIGH")
+                )
+            );
+            if (tex == TextureType.COMP)
+            {
+#pragma warning disable CS8602
+                xmldoc.Root.Element("BitmapConfiguration").Add(new XElement("ForceNoAlpha", true));
+#pragma warning restore CS8602
+            }
+            xmldoc.Save(dir + file + ".xml");
+        }
+
+        private string UnpackJson(string filename)
+        {
+            try
+            {
+                string fileContents = File.ReadAllText(filename);
+                dynamic stuff = JsonConvert.DeserializeObject(fileContents);
+                string[] flags = stuff.Flags;
+                foreach (string f in flags)
+                {
+                    switch (f)
+                    {
+                        case "FL_BITMAP_METAL_ROUGH_AO_DATA":
+                            return TextureType.COMP;
+                        case "FL_BITMAP_TANGENT_DXT5N":
+                            return TextureType.NORM;
+                    }
+                }
+                return TextureType.ALBD;
+            }
+            catch (Exception err)
+            {
+                ConsoleWriteLine(err.Message);
+                return "FAIL";
+            }
+        }
+
+        private async void ProcessHandler(bool isJsonAvail = false)
         {
             bool error = false;
             Dispatcher.Invoke(() => {
@@ -309,9 +364,15 @@ namespace LiveryConverter2024
             ExeClass exeClass = new ExeClass(this);
             await exeClass.SpawnProc(path + "texconv.exe", "-r:keep " + path + "DDSINPUT\\*.png.dds -o " + path + "TEMP -f:rgba -ft:png");
             await exeClass.SpawnProc(path + "texconv.exe", "-r:keep " + path + "DDSINPUT\\*.tif.dds -o " + path + "TEMP -f:rgba -ft:tif");
-            
-            GenerateXMLs();
-
+            if (isJsonAvail)
+            {
+                // TODO special handling
+                GenerateXMLs();
+            }
+            else
+            {
+                GenerateXMLs();
+            }
             string stearing = " ";
             if (Properties.Settings.Default.store == "Steam")
             {
@@ -397,12 +458,19 @@ namespace LiveryConverter2024
             };
             if (fileDialog.ShowDialog() == true)
             {
+                bool isJsonAvail = false;
                 foreach (string f in fileDialog.FileNames)
                 {
                     ConsoleWriteLine("Uploading textures to project...");
                     File.Copy(f, path + "DDSINPUT\\" + System.IO.Path.GetFileName(f));
+                    // Grab json files for typing if not exists
+                    if (File.Exists(f + ".json")) 
+                    {
+                        File.Copy(f+".json", path + "DDSINPUT\\" + System.IO.Path.GetFileName(f));
+                        isJsonAvail = true;
+                    }
                 }
-                ProcessHandler();
+                ProcessHandler(isJsonAvail);
             }
         }
 
