@@ -1,3 +1,10 @@
+# 0.1.3
+- Add BuilderLogError.txt opener to provide info on failures.. (NF) (Note: No Steam Support yet)
+- Dialog at end asks to open log file on error.
+- Move main subroutines to new class for readability.
+- Fix a bug causing JSON to always fail.
+- Fix a bug causing all textures to be processed as ALBD.
+
 # 0.1.2
 - Automatic detection of JSON file for DDS texture format. Fallback to filename detection if not
 - Refactor GenerateXMLs() to handle JJSON and some minor efficiencies.
