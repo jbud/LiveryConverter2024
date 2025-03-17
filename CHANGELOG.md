@@ -1,3 +1,7 @@
+# 0.1.2 (hotfix-2)
+- [Hotfix]Fix a hang with MSFSLayoutGenerator.exe
+- [Hotfix]Handle errors from MSFSLayoutGenerator.exe
+
 # 0.1.2 (hotfix-1)
 - Add BuilderLogError.txt opener to provide info on failures.. (Incomplete) (Note: No Steam Support yet)
 - Dialog at end asks to open log file on error.

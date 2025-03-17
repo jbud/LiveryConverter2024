@@ -162,7 +162,7 @@ namespace LiveryConverter2024
                         ConsoleWriteLine("layout.json found! running MSFSLayoutGenerator.exe...");
                         if (File.Exists(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe"))
                         {
-                            await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json");
+                            await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json", true);
                         }
                         else
                         {
@@ -177,7 +177,14 @@ namespace LiveryConverter2024
                         ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
                         mainWindowRef.GeneralError = true;
                     }
-                    ConsoleWriteLine("Conversion Complete!");
+                    if (mainWindowRef.GeneralError)
+                    {
+                        ConsoleWriteLine("Conversion Complete with errors!");
+                    }
+                    else
+                    {
+                        ConsoleWriteLine("Conversion Complete!");
+                    }
                 }
                 else
                 {
