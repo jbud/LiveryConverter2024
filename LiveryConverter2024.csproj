@@ -8,13 +8,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <ApplicationIcon>includes\+4_app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="includes\+4.ico" />
     <None Remove="includes\texconv.exe" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="includes\+4_app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="includes\+4.ico" />
     <EmbeddedResource Include="includes\texconv.exe" />
   </ItemGroup>
 

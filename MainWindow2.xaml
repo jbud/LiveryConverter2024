@@ -1,0 +1,225 @@
+﻿<Window x:Class="LiveryConverter2024.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LiveryConverter2024"
+        mc:Ignorable="d"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Icon="includes/+4.ico"
+        Title="MSFS 2020 to 2024 Livery Converter" Height="800" Width="650" ResizeMode="NoResize">
+    <Grid Background="#FF1A1A1A">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="287*"/>
+            <ColumnDefinition Width="32*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="449*"/>
+            <RowDefinition Height="70*"/>
+            <RowDefinition Height="265*"/>
+        </Grid.RowDefinitions>
+        <TabControl x:Name="tabControl" Grid.RowSpan="3" Grid.ColumnSpan="3">
+            <TabItem Header="Livery" BorderBrush="Black" Margin="5,0,0,0">
+                <Grid x:Name="grid" Background="#FF282828">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="153*"/>
+                        <ColumnDefinition Width="177*"/>
+                        <ColumnDefinition Width="255*"/>
+                        <ColumnDefinition Width="65*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="285*"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBox x:Name="LiveryPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25"/>
+                    <Label x:Name="label" Content="2020 Livery Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139"/>
+                    <ui:Button x:Name="LiveryPathButton" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" ToolTip="Path to the 2020 Livery you wish to convert. This should be the base directory where layout.json resides" Click="LiveryPathButton_Click">
+                        <Rectangle Width="30" Height="30">
+                            <Rectangle.Fill>
+                                <DrawingBrush>
+                                    <DrawingBrush.Drawing>
+                                        <DrawingGroup ClipGeometry="M0,0 V490 H490 V0 H0 Z">
+                                            <DrawingGroup Opacity="1">
+                                                <DrawingGroup Opacity="1">
+                                                    <DrawingGroup Opacity="1">
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M410.3,447.2L410.3,447.2 0,447.2 79.7,157.9 490,157.9z" />
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M62.2,134.9L62.2,134.9 410.3,134.9 410.3,90.6 205.3,90.6 184.7,42.8 0,42.8 0,360.9z" />
+                                                    </DrawingGroup>
+                                                </DrawingGroup>
+                                            </DrawingGroup>
+                                        </DrawingGroup>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ui:Button>
+                    <Label x:Name="label_Copy" Content="2024 layout.json" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139" Grid.Row="1"/>
+                    <ui:TextBox x:Name="LayoutPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="1"/>
+                    <ui:Button x:Name="LayoutPathButton" Grid.Column="3"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" Grid.Row="1" ToolTip="Path to your new converted 2024 livery's layout.json file. NOTE: Follow the paintkit for directory layout for MSFS 2024 as it may differ from 2020 layouts.">
+                        <Rectangle Width="30" Height="30">
+                            <Rectangle.Fill>
+                                <DrawingBrush>
+                                    <DrawingBrush.Drawing>
+                                        <DrawingGroup ClipGeometry="M0,0 V490 H490 V0 H0 Z">
+                                            <DrawingGroup Opacity="1">
+                                                <DrawingGroup Opacity="1">
+                                                    <DrawingGroup Opacity="1">
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M410.3,447.2L410.3,447.2 0,447.2 79.7,157.9 490,157.9z" />
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M62.2,134.9L62.2,134.9 410.3,134.9 410.3,90.6 205.3,90.6 184.7,42.8 0,42.8 0,360.9z" />
+                                                    </DrawingGroup>
+                                                </DrawingGroup>
+                                            </DrawingGroup>
+                                        </DrawingGroup>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ui:Button>
+                    <Label x:Name="label_Copy1" Content="2024 Texture Out Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139" Grid.Row="2"/>
+                    <ui:TextBox x:Name="TexturePath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="2"/>
+                    <ui:Button x:Name="TexturePathButton" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" Grid.Row="2" ToolTip="Path to the final texture folder inside your new 2024 Livery.">
+                        <Rectangle Width="30" Height="30">
+                            <Rectangle.Fill>
+                                <DrawingBrush>
+                                    <DrawingBrush.Drawing>
+                                        <DrawingGroup ClipGeometry="M0,0 V490 H490 V0 H0 Z">
+                                            <DrawingGroup Opacity="1">
+                                                <DrawingGroup Opacity="1">
+                                                    <DrawingGroup Opacity="1">
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M410.3,447.2L410.3,447.2 0,447.2 79.7,157.9 490,157.9z" />
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M62.2,134.9L62.2,134.9 410.3,134.9 410.3,90.6 205.3,90.6 184.7,42.8 0,42.8 0,360.9z" />
+                                                    </DrawingGroup>
+                                                </DrawingGroup>
+                                            </DrawingGroup>
+                                        </DrawingGroup>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ui:Button>
+                    <ui:Button x:Name="button1" Grid.Column="1" Content="Convert Livery Textures!" Grid.RowSpan="2" Grid.Row="3" VerticalAlignment="Stretch" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="5,5,5,5" IsEnabled="False" ToolTip="Check Settings and Paths!"/>
+                    <Label x:Name="labelValidation1" Grid.Column="1" Content="Found Texture files successfully!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True"/>
+                    <Label x:Name="labelValidation2" Grid.Column="1" Content="layout.json exists!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="1"/>
+                    <Label x:Name="labelValidation3" Grid.Column="1" Content="Validated!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="2"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Settings" BorderBrush="Black">
+                <Grid Background="#FF282828">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="153*"/>
+                        <ColumnDefinition Width="177*"/>
+                        <ColumnDefinition Width="255*"/>
+                        <ColumnDefinition Width="65*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="70*"/>
+                        <RowDefinition Height="285*"/>
+                    </Grid.RowDefinitions>
+
+                    <ui:TextBox x:Name="SDKPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25"/>
+                    <Label x:Name="label2" Content="MSFS 2024 SDK Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139"/>
+                    <ui:Button x:Name="SDKPathButton" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" ToolTip="Base path for the MSFS 2024 SDK. (Example: C:\MSFS 2024 SDK">
+                        <Rectangle Width="30" Height="30">
+                            <Rectangle.Fill>
+                                <DrawingBrush>
+                                    <DrawingBrush.Drawing>
+                                        <DrawingGroup ClipGeometry="M0,0 V490 H490 V0 H0 Z">
+                                            <DrawingGroup Opacity="1">
+                                                <DrawingGroup Opacity="1">
+                                                    <DrawingGroup Opacity="1">
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M410.3,447.2L410.3,447.2 0,447.2 79.7,157.9 490,157.9z" />
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M62.2,134.9L62.2,134.9 410.3,134.9 410.3,90.6 205.3,90.6 184.7,42.8 0,42.8 0,360.9z" />
+                                                    </DrawingGroup>
+                                                </DrawingGroup>
+                                            </DrawingGroup>
+                                        </DrawingGroup>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ui:Button>
+                    <ui:TextBox x:Name="LGPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="1"/>
+                    <Label x:Name="label3" Content="Layout Generator Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139" Grid.Row="1"/>
+                    <ui:Button x:Name="LGPathButton" Grid.Column="3"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" Grid.Row="1" ToolTip="Path to MSFSLayoutGenerator.exe">
+                        <Rectangle Width="30" Height="30">
+                            <Rectangle.Fill>
+                                <DrawingBrush>
+                                    <DrawingBrush.Drawing>
+                                        <DrawingGroup ClipGeometry="M0,0 V490 H490 V0 H0 Z">
+                                            <DrawingGroup Opacity="1">
+                                                <DrawingGroup Opacity="1">
+                                                    <DrawingGroup Opacity="1">
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M410.3,447.2L410.3,447.2 0,447.2 79.7,157.9 490,157.9z" />
+                                                        <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M62.2,134.9L62.2,134.9 410.3,134.9 410.3,90.6 205.3,90.6 184.7,42.8 0,42.8 0,360.9z" />
+                                                    </DrawingGroup>
+                                                </DrawingGroup>
+                                            </DrawingGroup>
+                                        </DrawingGroup>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ui:Button>
+                    <Label x:Name="labelValidation4" Grid.Column="1" Content="Found SDK!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.RowSpan="2"/>
+                    <Label x:Name="labelValidation5" Grid.Column="1" Content="Found MSFSLayoutGenerator.exe" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Center" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="1"/>
+                    <Label x:Name="label3_Copy" Content="Simulator Version" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139" Grid.Row="2"/>
+                    <ComboBox x:Name="comboBox" SelectionChanged="SimVersion_Changed" Grid.Column="1" Grid.Row="2" Margin="5,5,5,25" VerticalAlignment="Stretch">
+                        <ComboBoxItem Content="Steam"/>
+                        <ComboBoxItem Content="MS Store"/>
+                    </ComboBox>
+                    <Label x:Name="labelValidation6" Grid.Column="1" Content="Saved!" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="2" Visibility="Hidden"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Label x:Name="debugLabel" Content="Debug output" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Height="23" Width="87" Grid.Column="1" Grid.Row="1"/>
+        <TextBox x:Name="debug" TextWrapping="Wrap" SnapsToDevicePixels="True" Margin="5,25,5,10" IsReadOnly="True" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
+        <ui:Button x:Name="DebugOpenButton" Grid.Column="2" Grid.Row="1" VerticalAlignment="Top" Margin="0,25,0,0" ToolTip="Open Log File." HorizontalAlignment="Center" Height="43" Width="54">
+            <Rectangle Width="30" Height="30">
+                <Rectangle.Fill>
+                    <DrawingBrush>
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup ClipGeometry="M0,0 V490 H490 V0 H0 Z">
+                                <DrawingGroup Opacity="1">
+                                    <DrawingGroup Opacity="1">
+                                        <DrawingGroup Opacity="1">
+                                            <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M410.3,447.2L410.3,447.2 0,447.2 79.7,157.9 490,157.9z" />
+                                            <GeometryDrawing Brush="White" Geometry="F1 M490,490z M0,0z M62.2,134.9L62.2,134.9 410.3,134.9 410.3,90.6 205.3,90.6 184.7,42.8 0,42.8 0,360.9z" />
+                                        </DrawingGroup>
+                                    </DrawingGroup>
+                                </DrawingGroup>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </ui:Button>
+        <ui:Button x:Name="DebugCopyButton" Grid.Column="2" Grid.Row="2" VerticalAlignment="Top" Margin="0,10,0,0" ToolTip="Copy Log to Clipboard..." HorizontalAlignment="Center" Height="43" Width="54">
+            <Rectangle Width="30" Height="30">
+                <Rectangle.Fill>
+                    <DrawingBrush>
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup ClipGeometry="M0,0 V64 H64 V0 H0 Z">
+                                <DrawingGroup Opacity="1">
+                                    <GeometryDrawing Brush="White" Geometry="F1 M64,64z M0,0z M53.9791489,9.1429005L50.010849,9.1429005C49.9281502,9.1429005,49.8546486,9.1713,49.7777481,9.1899004L49.7777481,5.0228C49.7777481,2.253,47.4731483,0,44.6398468,0L10.2172508,0C7.3839517,0,5.0793519,2.253,5.0793519,5.0228L5.0793519,51.8660999C5.0793519,54.6358982,7.3839517,56.8889003,10.2172518,56.8889003L16.253952,56.8889003 16.253952,59.1567989C16.253952,61.8274002,18.4702511,64,21.1954517,64L53.9791507,64C56.7043514,64,58.9206485,61.8274002,58.9206485,59.1567993L58.9206485,13.9861002C58.9206467,11.3155003,56.7043495,9.1429005,53.9791489,9.1429005z M7.1110516,51.8661003L7.1110516,5.0228C7.1110516,3.3740001,8.5049515,2.0318001,10.2172518,2.0318001L44.6398478,2.0318001C46.352151,2.0318001,47.746049,3.3740001,47.746049,5.0228L47.746049,51.8660999C47.746049,53.5148998,46.352151,54.8572002,44.6398478,54.8572002L10.2172518,54.8572002C8.5049515,54.8572006,7.1110516,53.5149002,7.1110516,51.8661003z M56.8888474,59.1567993C56.8888474,60.7074013,55.5833474,61.9682998,53.9791489,61.9682998L21.1954499,61.9682998C19.5912495,61.9682998,18.2856503,60.7074012,18.2856503,59.1567993L18.2856503,56.8889007 44.6398449,56.8889007C47.4731464,56.8889007,49.7777462,54.6358985,49.7777462,51.8661003L49.7777462,11.1275997C49.8546467,11.1462002,49.9281483,11.1745996,50.0108471,11.1745996L53.979147,11.1745996C55.5833455,11.1745996,56.8888455,12.4355001,56.8888455,13.9861001L56.8888455,59.1567993z" />
+                                    <GeometryDrawing Brush="White" Geometry="F1 M64,64z M0,0z M38.6031494,13.2063999L16.253952,13.2063999C15.6924515,13.2063999 15.2380514,13.6606998 15.2380514,14.2222004 15.2380514,14.7838001 15.6924515,15.2381001 16.253952,15.2381001L38.6031494,15.2381001C39.1646499,15.2381001 39.6190491,14.7838002 39.6190491,14.2222004 39.6190491,13.6606998 39.16465,13.2063999 38.6031494,13.2063999z" />
+                                    <GeometryDrawing Brush="White" Geometry="F1 M64,64z M0,0z M38.6031494,21.3334007L16.253952,21.3334007C15.6924515,21.3334007 15.2380514,21.7877006 15.2380514,22.3491993 15.2380514,22.9106998 15.6924515,23.3651009 16.253952,23.3651009L38.6031494,23.3651009C39.1646499,23.3651009 39.6190491,22.9106999 39.6190491,22.3491993 39.6190491,21.7877007 39.16465,21.3334007 38.6031494,21.3334007z" />
+                                    <GeometryDrawing Brush="White" Geometry="F1 M64,64z M0,0z M38.6031494,29.4603004L16.253952,29.4603004C15.6924515,29.4603004 15.2380514,29.9146995 15.2380514,30.4762001 15.2380514,31.0377007 15.6924515,31.4920998 16.253952,31.4920998L38.6031494,31.4920998C39.1646499,31.4920998 39.6190491,31.0377007 39.6190491,30.4762001 39.6190491,29.9146995 39.16465,29.4603004 38.6031494,29.4603004z" />
+                                    <GeometryDrawing Brush="White" Geometry="F1 M64,64z M0,0z M28.4444485,37.5872993L16.253952,37.5872993C15.6924515,37.5872993 15.2380514,38.0416984 15.2380514,38.603199 15.2380514,39.1646996 15.6924515,39.6190987 16.253952,39.6190987L28.4444484,39.6190987C29.0059509,39.6190987 29.4602489,39.1646996 29.4602489,38.603199 29.4602489,38.0416984 29.0059509,37.5872993 28.4444485,37.5872993z" />
+                                </DrawingGroup>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </ui:Button>
+    </Grid>
+</Window>

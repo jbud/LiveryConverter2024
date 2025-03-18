@@ -1,3 +1,9 @@
+# 0.1.99-demo
+- Interface 2.0 basic layout.
+- Tooltips added.
+- Setting validation (NF)
+- Functionally unusable, demo is for layout to use set MainWindow2.xaml as entrypoint.
+
 # 0.1.2 (hotfix-2)
 - [Hotfix]Fix a hang with MSFSLayoutGenerator.exe
 - [Hotfix]Handle errors from MSFSLayoutGenerator.exe
