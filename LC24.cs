@@ -267,7 +267,8 @@ namespace LiveryConverter2024
         {
             try
             {
-                ConsoleWriteLine("Scanning included DDS.json file...");
+                ConsoleWriteLine("Scanning included DDS.json file: ");
+                ConsoleWriteLine(filename + " ...");
                 string fileContents = File.ReadAllText(filename);
 #pragma warning disable CS8602
 #pragma warning disable CS8600
