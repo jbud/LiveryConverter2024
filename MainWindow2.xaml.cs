@@ -1,17 +1,8 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace LiveryConverter2024
 {
@@ -20,6 +11,7 @@ namespace LiveryConverter2024
     /// </summary>
     public partial class Window1 : Window
     {
+        public readonly string version = "0.1.99";
         public Window1()
         {
             InitializeComponent();
@@ -30,16 +22,78 @@ namespace LiveryConverter2024
                 _ => 0,
             };
         }
+
+        public string DebugConsole
+        {
+            get { return debug.Text; }
+            set
+            {
+                debug.AppendText(value);
+                debug.ScrollToEnd();
+            }
+        }
+
+        public void ConsoleWriteLine(string line)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                DebugConsole = line + "\n";
+            });
+        }
+
         public string? cwd20;
+
+        private void LabelValidation(Label labelname, string text = "*", bool error = false, bool hide = false)
+        {
+            Brush color = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C51FFF00"));
+            if (error)
+            {
+                color = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C5FF1F00"));
+            }
+            Dispatcher.Invoke(() => 
+            {
+                if (text != "*")
+                {
+                    labelname.Content = text;
+                }
+                if (hide)
+                {
+                    labelname.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    labelname.Visibility = Visibility.Visible;
+                }
+                labelname.Foreground = color;
+            });
+        }
 
         private void LiveryPathButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderDialog folderDialog = new();
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
             if (folderDialog.ShowDialog() == true)
             {
                 string? folderName = folderDialog.FolderName;
                 LiveryPath.Text = folderName;
-                cwd20 = folderName;
+                try
+                {
+                    IEnumerable<string>? ddsFiles = Directory.EnumerateFiles(folderName, "*.DDS", SearchOption.AllDirectories);
+                    string fullpath = ddsFiles.First().ToString();
+                    string dirname = Path.GetDirectoryName(fullpath)!;
+                    if (dirname != null)
+                    {
+                        cwd20 = dirname;
+                        LabelValidation(labelValidation1, "Found Texture files successfully!");
+                        ConsoleWriteLine("Found Texture files successfully!");
+                        ConsoleWriteLine(cwd20);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ConsoleWriteLine("Unable to find textures!");
+                    ConsoleWriteLine(ex.Message);
+                    LabelValidation(labelValidation1, "Unable to find textures!", true);
+                }
             }
         }
 
@@ -49,8 +103,22 @@ namespace LiveryConverter2024
             Properties.Settings.Default.Save();
             if (((ComboBoxItem)comboBox.SelectedItem).Content.ToString() == Properties.Settings.Default.store)
             {
-                labelValidation6.Visibility = Visibility.Visible;
+                LabelValidation(labelValidation6);
             }
+            else
+            {
+                LabelValidation(labelValidation6, "*", false, true);
+            }
+        }
+
+        private void InfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("LiveryConverter2024 Version "+version);
+        }
+
+        private void DebugOpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Clicked!");
         }
     }
 }

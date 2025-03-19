@@ -1,3 +1,10 @@
+# 0.1.99-demo-2
+- Tweak button icons by moving to WPF.UI icons vs converted SVGs. This resulted in much cleaner XAML
+- Add Info button which will eventually show version information and more.
+- Add LabelValidation() function to manage labels with ease using Dispatching.
+- Port DebugConsole() and ConsoleWriteLine() functions to new interface.
+- Version identification, TODO: Add version info to debug logs.
+
 # 0.1.99-demo
 - Interface 2.0 basic layout.
 - Tooltips added.
