@@ -60,7 +60,7 @@ jobs:
                   $linesBeforeNextTag += $line
               }
           }
-          Write-Output "changelog=$linesBeforeNextTag" >> $env:GITHUB_OUTPUT
+          Write-Output $linesBeforeNextTag > TEMPLOG.md
       
     - name: Run a one-line script
       run: Write-Output "${{ steps.change.outputs.changelog }}"
@@ -77,8 +77,8 @@ jobs:
         # The name of the release. For example, `Release v1.0.1`
         release_name: v${{ steps.getversion.outputs.version }}-beta
         # Text describing the contents of the tag.
-        #body_path: CHANGELOG.md
-        body: ${{ steps.change.outputs.changelog }}
+        body_path: TEMPLOG.md
+        #body: ${{ steps.change.outputs.changelog }}
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
         prerelease: false
     - name: Archive Release
