@@ -27,7 +27,7 @@ jobs:
 
 
       # Runs a set of commands using the runners shell
-      - name: Powershell!
+      - name: Powershell
         id: change
         run: |
             $changelogPath = "CHANGELOG.md"
@@ -49,7 +49,7 @@ jobs:
                     $linesBeforeNextTag += $line
                 }
             }
-            Write-Output $linesBeforeNextTag >> $GITHUB_OUTPUT
+            echo "{$name}={$linesBeforeNextTag}" >> $GITHUB_OUTPUT
         
       - name: Run a one-line script
-        run: echo ${{ steps.change.outputs }}
+        run: echo ${{ steps.change.outputs.Powershell }}
