@@ -37,6 +37,33 @@ jobs:
     - name: Read VERSION file
       id: getversion
       run: echo "::set-output name=version::$(cat VERSION.txt)"
+    - name: Powershell
+      id: change
+      shell: pwsh
+      run: |
+          $changelogPath = "CHANGELOG.md"
+          $lines = Get-Content -Path $changelogPath
+          $beforeNextTag = $true
+          $linesBeforeNextTag = @()
+          $startAt = 1
+          $count = 0
+          foreach ($line in $lines) {
+              if ($line -match "^# ") {
+                  if ($count -eq $startAt) {
+                      $beforeNextTag = $false
+                      break
+                  } else {
+                      $count = $count + 1
+                  }
+              }
+              if ($beforeNextTag) {
+                  $linesBeforeNextTag += $line
+              }
+          }
+          Write-Output "changelog=$linesBeforeNextTag" >> $env:GITHUB_OUTPUT
+      
+    - name: Run a one-line script
+      run: Write-Output "${{ steps.change.outputs.changelog }}"
     - name: Create a Release in a GitHub Action
       id: create_release
       env:
@@ -50,7 +77,8 @@ jobs:
         # The name of the release. For example, `Release v1.0.1`
         release_name: v${{ steps.getversion.outputs.version }}-beta
         # Text describing the contents of the tag.
-        body_path: CHANGELOG.md
+        #body_path: CHANGELOG.md
+        body: ${{ steps.change.outputs.changelog }}
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
         prerelease: false
     - name: Archive Release
