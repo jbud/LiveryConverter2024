@@ -6,6 +6,10 @@ namespace LiveryConverter2024
     {
         public MainWindow mainWindowRef = mainWindowRef;
 
+        /// <summary>
+        /// Forward to debug console in MainWindow
+        /// </summary>
+        /// <param name="line"></param>
         private void ConsoleWriteLine(string line)
         {
             mainWindowRef.Dispatcher.Invoke(() =>
@@ -14,7 +18,13 @@ namespace LiveryConverter2024
             });
         }
 
-
+        /// <summary>
+        /// Spawn a process to be handled by a background thread. Process will spawn with no window and redirect stdout to debug console in MainWindow
+        /// </summary>
+        /// <param name="proc">path to filename for the process to spawn</param>
+        /// <param name="args">arguments to the spawned process</param>
+        /// <param name="sync">**overload** spawn synchronous process with special handling for "press any key to exit..." action requiremnents. (default: false)</param>
+        /// <returns></returns>
         public async Task SpawnProc(string proc, string args, bool sync = false)
         {
             using Process? p2 = new Process();
@@ -55,6 +65,12 @@ namespace LiveryConverter2024
                 await p2.WaitForExitAsync();
             }
         }
+
+        /// <summary>
+        /// Find a background process and wait for it to complete
+        /// </summary>
+        /// <param name="processName">the name of the process (Ignoring path or extension)</param>
+        /// <returns></returns>
         public async Task ProcMon(string processName)
         {
             Thread.Sleep(2000);
