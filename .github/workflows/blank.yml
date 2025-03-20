@@ -50,7 +50,7 @@ jobs:
                     $linesBeforeNextTag += $line
                 }
             }
-            Write-Output "changelog={linesBeforeNextTag}" >> $env:GITHUB_OUTPUT
+            Write-Output "changelog=$linesBeforeNextTag" >> $env:GITHUB_OUTPUT
         
       - name: Run a one-line script
         run: Write-Output ${{ steps.change.outputs.changelog }}
