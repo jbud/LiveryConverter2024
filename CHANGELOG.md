@@ -1,3 +1,18 @@
+# 0.1.99-demo-3
+- Additional info at top of log (include version for support purposes)
+- Set and import settings in settings page.
+- Validation functionality for all validation labels
+	- Special validation for settings, ensuring required EXE files.
+	- Special validation for 2020 livery scanning for DDS files
+	- Special validation for json input ensuring proper naming "layout.json"
+	- Special validation for 2024 texture out by ensuring it's within layout.json's path
+	- Convert button disabled until all validations pass (except texture out)
+- Actions for all buttons except Convert have been implemented.
+- Logfile support improved. Open Log button will immediately write all output to log file and open it.
+- Debug Log can be copied to clipboard with new "animated" copy to clipboard button.
+- Fixed log file naming to use small year, and 24hour time.
+- Debug field now readonly again.
+
 # 0.1.99-demo-2
 - Tweak button icons by moving to WPF.UI icons vs converted SVGs. This resulted in much cleaner XAML
 - Add Info button which will eventually show version information and more.

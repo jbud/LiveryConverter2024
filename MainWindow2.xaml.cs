@@ -1,8 +1,11 @@
 ﻿using Microsoft.Win32;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Shapes;
+using Wpf.Ui.Controls;
 
 namespace LiveryConverter2024
 {
@@ -15,13 +18,24 @@ namespace LiveryConverter2024
         public Window1()
         {
             InitializeComponent();
+
+            ConsoleWriteLine("LiveryConverter2024 Version " + version);
+            ConsoleWriteLine("By Budzique");
+
+            SDKPath.Text = Properties.Settings.Default.sdkPath;
+            ValidateSDK(Properties.Settings.Default.sdkPath);
+            LGPath.Text = Properties.Settings.Default.layoutGenPath;
+            ValidateLG(Properties.Settings.Default.layoutGenPath);
             string? t_cb = Properties.Settings.Default.store;
             comboBox.SelectedIndex = t_cb switch
             {
                 "MS Store" => 1,
                 _ => 0,
             };
+
         }
+
+        private readonly string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "com.budzique.livery-converter.app\\");
 
         public string DebugConsole
         {
@@ -42,6 +56,22 @@ namespace LiveryConverter2024
         }
 
         public string? cwd20;
+        public string? layout24;
+        public string? texpath24;
+        private bool sdkValid = true;
+        private bool lgValid = true;
+
+        private void CheckEnableConvertButton()
+        {
+            if(cwd20 != null && layout24 != null && texpath24 != null && sdkValid && lgValid)
+            {
+                button1.IsEnabled = true;
+            }
+            else
+            {
+                button1.IsEnabled = false;
+            }
+        }
 
         private void LabelValidation(Label labelname, string text = "*", bool error = false, bool hide = false)
         {
@@ -76,7 +106,7 @@ namespace LiveryConverter2024
                 {
                     IEnumerable<string>? ddsFiles = Directory.EnumerateFiles(folderName, "*.DDS", SearchOption.AllDirectories);
                     string fullpath = ddsFiles.First().ToString();
-                    string dirname = Path.GetDirectoryName(fullpath)!;
+                    string dirname = System.IO.Path.GetDirectoryName(fullpath)!;
                     if (dirname != null)
                     {
                         cwd20 = dirname;
@@ -84,7 +114,7 @@ namespace LiveryConverter2024
                         {
                             LabelValidation(labelValidation1, "Found Texture files successfully!");
                             ConsoleWriteLine("Found Texture files successfully!");
-                            ConsoleWriteLine(cwd20);
+                            ConsoleWriteLine("Using: "+cwd20);
                         });
                     }
                 }
@@ -108,7 +138,7 @@ namespace LiveryConverter2024
                 string? folderName = folderDialog.FolderName;
                 LiveryPath.Text = folderName;
                 _ = LiveryValidate(folderName);
-                
+                CheckEnableConvertButton();
             }
         }
 
@@ -128,12 +158,153 @@ namespace LiveryConverter2024
 
         private void InfoButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("LiveryConverter2024 Version "+version);
+            System.Windows.MessageBox.Show("LiveryConverter2024 Version "+version, "About", System.Windows.MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void DebugOpenButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Clicked!");
+            string t = DateTime.Now.ToString(@"MM-dd-yy-HH-mm");
+            string log = path + "LC24-" + t + ".log";
+            File.WriteAllText(log, DebugConsole);
+            Uri uri = new Uri(log);
+            string converted = uri.AbsoluteUri;
+            ProcessStartInfo p = new ProcessStartInfo(converted)
+            {
+                UseShellExecute = true,
+                Verb = "open"
+            };
+            Process.Start(p);
+        }
+
+        private void LayoutPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog() 
+            { 
+                Filter = "JSON files (*.json)|*.json"
+            };
+            if (fileDialog.ShowDialog() == true)
+            {
+                LayoutPath.Text = fileDialog.FileName;
+                if (fileDialog.FileName.Contains("layout.json"))
+                {
+                    LabelValidation(labelValidation2, "Found layout.json!");
+                    ConsoleWriteLine("Found layout.json!");
+                    layout24 = fileDialog.FileName;
+                }
+                else
+                {
+                    LabelValidation(labelValidation2, "Invalid json file please try again!", true);
+                    ConsoleWriteLine("Invalid json file please try again!");
+                }
+                CheckEnableConvertButton();
+            }
+        }
+
+        private void TexturePathButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
+            if (folderDialog.ShowDialog() == true)
+            {
+                string? folderName = folderDialog.FolderName;
+                TexturePath.Text = folderName;
+                texpath24 = folderName;
+                if (layout24 != null)
+                {
+                    if (folderName.Contains(System.IO.Path.GetDirectoryName(layout24)!))
+                    {
+                        LabelValidation(labelValidation3, "Texture directory inside layout!");
+                        ConsoleWriteLine("Texture directory inside layout!");
+                    }
+                    else
+                    {
+                        LabelValidation(labelValidation3, "Texture directory outside layout!", true);
+                        ConsoleWriteLine("WARN: Texture directory inside layout! ok to continue, layoutgenerator will have no effect.");
+                    }
+                }
+                CheckEnableConvertButton();
+            }
+            
+        }
+
+        private void DebugCopyButton_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(debug.Text);
+
+            DebugCopyButton.Icon = new SymbolIcon(SymbolRegular.Checkmark20, 30, true);
+            Task.Run(()=> {
+                Task delay = Task.Delay(1500);
+                delay.Wait();
+
+                Dispatcher.Invoke(() => 
+                {
+                    DebugCopyButton.Icon = new SymbolIcon(SymbolRegular.ClipboardPaste20, 30, true);
+                });
+            });
+        }
+
+        private void ValidateSDK(string dir)
+        {
+            if (File.Exists(dir + "\\tools\\bin\\fspackagetool.exe"))
+            {
+                lgValid = true;
+                LabelValidation(labelValidation5, "Found SDK!");
+                ConsoleWriteLine("Found SDK!");
+            }
+            else
+            {
+                lgValid = false;
+                ConsoleWriteLine("Unable to find SDK, Check settings...");
+                LabelValidation(labelValidation5, "Unable to find SDK...", true);
+            }
+        }
+
+        private void ValidateLG(string dir)
+        {
+            if (File.Exists(dir + "\\MSFSLayoutGenerator.exe"))
+            {
+                lgValid = true;
+                LabelValidation(labelValidation5, "Found Layout Generator!");
+                ConsoleWriteLine("Found Layout Generator!");
+            }
+            else
+            {
+                lgValid = false;
+                ConsoleWriteLine("Unable to find LayoutGenerator, Check settings...");
+                LabelValidation(labelValidation5, "Unable to find MSFSLayoutGenerator.exe...", true);
+            }
+        }
+
+        private void SDKPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
+
+            if (folderDialog.ShowDialog() == true)
+            {
+                string? folderName = folderDialog.FolderName;
+                SDKPath.Text = folderName;
+                Properties.Settings.Default.sdkPath = folderName;
+                Properties.Settings.Default.Save();
+                ValidateSDK(folderName);
+            }
+        }
+
+        private void LGPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
+
+            if (folderDialog.ShowDialog() == true)
+            {
+                string? folderName = folderDialog.FolderName;
+                LGPath.Text = folderName;
+                Properties.Settings.Default.layoutGenPath = folderName;
+                Properties.Settings.Default.Save();
+                ValidateLG(folderName);
+            }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.MessageBox.Show("Here we go!");
         }
     }
 }

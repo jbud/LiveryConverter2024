@@ -235,7 +235,7 @@ namespace LiveryConverter2024
                 mainWindowRef.Progress.Visibility = Visibility.Hidden;
                 mainWindowRef.Progress.IsIndeterminate = false;
             });
-            string t = DateTime.Now.ToString(@"MM-dd-yyyy-h-mm-tt");
+            string t = DateTime.Now.ToString(@"MM-dd-yy-HH-mm");
             string log = path + "LC24-" + t + ".log";
             File.WriteAllText(log, mainWindowRef.DebugConsole);
             if (mainWindowRef.GeneralError)
