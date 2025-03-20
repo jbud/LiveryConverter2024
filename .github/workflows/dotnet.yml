@@ -37,7 +37,7 @@ jobs:
     - name: Read VERSION file
       id: getversion
       run: echo "::set-output name=version::$(cat VERSION.txt)"
-    - name: Powershell
+    - name: Get Most Recent Changelog Entry
       id: change
       shell: pwsh
       run: |
@@ -61,9 +61,7 @@ jobs:
               }
           }
           Write-Output $linesBeforeNextTag > TEMPLOG.md
-      
-    - name: Run a one-line script
-      run: Write-Output Get-Content TEMPLOG.md
+
     - name: Create a Release in a GitHub Action
       id: create_release
       env:
@@ -78,7 +76,6 @@ jobs:
         release_name: v${{ steps.getversion.outputs.version }}-beta
         # Text describing the contents of the tag.
         body_path: TEMPLOG.md
-        #body: ${{ steps.change.outputs.changelog }}
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
         prerelease: false
     - name: Archive Release
