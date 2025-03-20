@@ -12,16 +12,17 @@ namespace LiveryConverter2024
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class MainWindow : Window
     {
         public readonly string version = "0.1.99";
-        public Window1()
+        public MainWindow()
         {
             InitializeComponent();
 
             ConsoleWriteLine("LiveryConverter2024 Version " + version);
             ConsoleWriteLine("By Budzique");
-
+            lc24 = new LC24(this, path);
+            lc24.PrepareDirs();
             SDKPath.Text = Properties.Settings.Default.sdkPath;
             ValidateSDK(Properties.Settings.Default.sdkPath);
             LGPath.Text = Properties.Settings.Default.layoutGenPath;
@@ -36,6 +37,8 @@ namespace LiveryConverter2024
         }
 
         private readonly string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "com.budzique.livery-converter.app\\");
+
+        private readonly LC24 lc24;
 
         public string DebugConsole
         {
@@ -60,6 +63,7 @@ namespace LiveryConverter2024
         public string? texpath24;
         private bool sdkValid = true;
         private bool lgValid = true;
+        public bool GeneralError = false;
 
         private void CheckEnableConvertButton()
         {
@@ -304,7 +308,25 @@ namespace LiveryConverter2024
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("Here we go!");
+
+            lc24.ClearPath(new DirectoryInfo(path)); // cleanup work directory here again (in-case app isn't closed before next use).
+            GeneralError = false;
+            bool isJsonAvail = false;
+            string[] files = Directory.GetFiles(cwd20!, "*.DDS");
+            foreach (string f in files)
+            {
+                ConsoleWriteLine("Uploading textures to project...");
+                File.Copy(f, path + "DDSINPUT\\" + System.IO.Path.GetFileName(f));
+                // Grab json files for typing if exists
+                if (File.Exists(f + ".json"))
+                {
+                    File.Copy(f + ".json", path + "DDSINPUT\\" + System.IO.Path.GetFileName(f) + ".json");
+                    isJsonAvail = true;
+                }
+            }
+            lc24.ProcessHandler(isJsonAvail);
+
+            //System.Windows.MessageBox.Show("Here we go!");
         }
     }
 }

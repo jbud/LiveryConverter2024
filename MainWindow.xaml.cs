@@ -8,12 +8,12 @@ namespace LiveryConverter2024
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow_old : Window
     {
-        public MainWindow()
+        public MainWindow_old()
         {
             InitializeComponent();
-            lc24 = new LC24(this, path);
+            lc24 = new LC24(new MainWindow(), path);
             lc24.PrepareDirs();
             projectFolder.Text = Properties.Settings.Default.projectPath;
             textureFolder.Text = Properties.Settings.Default.texturePath;

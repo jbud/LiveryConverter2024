@@ -1,3 +1,6 @@
+# 0.1.99 (Release Candidate 1)
+- Bring in core functionality
+
 # 0.1.99-demo-3
 - Additional info at top of log (include version for support purposes)
 - Set and import settings in settings page.
