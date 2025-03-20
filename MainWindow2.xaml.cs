@@ -68,13 +68,10 @@ namespace LiveryConverter2024
             });
         }
 
-        private void LiveryPathButton_Click(object sender, RoutedEventArgs e)
+        private async Task LiveryValidate(string folderName) 
         {
-            OpenFolderDialog folderDialog = new OpenFolderDialog();
-            if (folderDialog.ShowDialog() == true)
+            await Task.Run(() =>
             {
-                string? folderName = folderDialog.FolderName;
-                LiveryPath.Text = folderName;
                 try
                 {
                     IEnumerable<string>? ddsFiles = Directory.EnumerateFiles(folderName, "*.DDS", SearchOption.AllDirectories);
@@ -83,17 +80,35 @@ namespace LiveryConverter2024
                     if (dirname != null)
                     {
                         cwd20 = dirname;
-                        LabelValidation(labelValidation1, "Found Texture files successfully!");
-                        ConsoleWriteLine("Found Texture files successfully!");
-                        ConsoleWriteLine(cwd20);
+                        Dispatcher.Invoke(() =>
+                        {
+                            LabelValidation(labelValidation1, "Found Texture files successfully!");
+                            ConsoleWriteLine("Found Texture files successfully!");
+                            ConsoleWriteLine(cwd20);
+                        });
                     }
                 }
                 catch (Exception ex)
                 {
-                    ConsoleWriteLine("Unable to find textures!");
-                    ConsoleWriteLine(ex.Message);
-                    LabelValidation(labelValidation1, "Unable to find textures!", true);
+                    Dispatcher.Invoke(() =>
+                    {
+                        ConsoleWriteLine("Unable to find textures!");
+                        ConsoleWriteLine(ex.Message);
+                        LabelValidation(labelValidation1, "Unable to find textures!", true);
+                    });
                 }
+            });
+        }
+
+        private void LiveryPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
+            if (folderDialog.ShowDialog() == true)
+            {
+                string? folderName = folderDialog.FolderName;
+                LiveryPath.Text = folderName;
+                _ = LiveryValidate(folderName);
+                
             }
         }
 

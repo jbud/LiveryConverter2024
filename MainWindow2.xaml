@@ -50,8 +50,9 @@
                     <ui:Button Icon="{ui:SymbolIcon Symbol=Folder20, Filled=True,FontSize=30}" x:Name="TexturePathButton" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" Grid.Row="2" ToolTip="Path to the final texture folder inside your new 2024 Livery."/>
                     <ui:Button x:Name="button1" Grid.Column="1" Content="Convert Livery Textures!" Grid.RowSpan="2" Grid.Row="3" VerticalAlignment="Stretch" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="5,5,5,5" ToolTip="Check Settings and Paths!"/>
                     <Label x:Name="labelValidation1" Grid.Column="1" Content="Found Texture files successfully!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Visibility="Hidden"/>
-                    <Label x:Name="labelValidation2" Grid.Column="1" Content="layout.json exists!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="1"/>
-                    <Label x:Name="labelValidation3" Grid.Column="1" Content="Validated!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="2"/>
+                    <Label x:Name="labelValidation2" Grid.Column="1" Content="layout.json exists!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="1" Visibility="Hidden"/>
+                    <Label x:Name="labelValidation3" Grid.Column="1" Content="Validated!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.Row="2" Visibility="Hidden"/>
+                    <ui:ProgressRing Grid.Row="3" Grid.RowSpan="2" Progress="0" IsIndeterminate="True"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Settings" BorderBrush="Black">
