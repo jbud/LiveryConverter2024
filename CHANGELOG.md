@@ -24,6 +24,8 @@
 - Remove artifacts from previous interface
 - Some code documentation
 - Bring in core functionality
+- Detailed TT for Convert Button
+- Fix a bug with LabelValidation for SDK
 
 # 0.1.2 (hotfix-2)
 - [Hotfix]Fix a hang with MSFSLayoutGenerator.exe

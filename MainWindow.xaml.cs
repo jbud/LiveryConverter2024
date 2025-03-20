@@ -72,6 +72,28 @@ namespace LiveryConverter2024
             }
             else
             {
+                string tt = "Convert Disabled: Unknown Error..aliens..";
+                if (cwd20 == null)
+                {
+                    tt = "Convert Disabled: Please check 2020 Livery Path";
+                } else
+                if (layout24 == null)
+                {
+                    tt = "Convert Disabled: Please check 2024 layout.json";
+                } else 
+                if (texpath24 == null)
+                {
+                    tt = "Convert Disabled: Please check 2024 Texture Out Path";
+                } else
+                if (!sdkValid)
+                {
+                    tt = "Convert Disabled: Please check SDK path";
+                } else
+                if (!lgValid)
+                {
+                    tt = "Convert Disabled: Please check Layout Generator Path";
+                }
+                button1.ToolTip = tt;
                 button1.IsEnabled = false;
             }
         }
@@ -250,14 +272,14 @@ namespace LiveryConverter2024
             if (File.Exists(dir + "\\tools\\bin\\fspackagetool.exe"))
             {
                 lgValid = true;
-                LabelValidation(labelValidation5, "Found SDK!");
+                LabelValidation(labelValidation4, "Found SDK!");
                 ConsoleWriteLine("Found SDK!");
             }
             else
             {
                 lgValid = false;
                 ConsoleWriteLine("Unable to find SDK, Check settings...");
-                LabelValidation(labelValidation5, "Unable to find SDK...", true);
+                LabelValidation(labelValidation4, "Unable to find SDK...", true);
             }
         }
 
