@@ -63,7 +63,7 @@ jobs:
           Write-Output $linesBeforeNextTag > TEMPLOG.md
       
     - name: Run a one-line script
-      run: Write-Output "${{ steps.change.outputs.changelog }}"
+      run: Write-Output Get-Content TEMPLOG.md
     - name: Create a Release in a GitHub Action
       id: create_release
       env:
