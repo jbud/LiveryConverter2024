@@ -52,4 +52,4 @@ jobs:
             Write-Output "{name}={linesBeforeNextTag}" >> $GITHUB_OUTPUT
         
       - name: Run a one-line script
-        run: echo ${{ steps.change.outputs.Powershell }}
+        run: Write-Output ${{ steps.change.outputs.Powershell }}
