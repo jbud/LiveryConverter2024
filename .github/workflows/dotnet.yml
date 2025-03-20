@@ -48,11 +48,11 @@ jobs:
         # The name of the tag. This should come from the webhook payload, `github.GITHUB_REF` when a user pushes a new tag
         tag_name: ${{ steps.getversion.outputs.version }}
         # The name of the release. For example, `Release v1.0.1`
-        release_name: v${{ steps.getversion.outputs.version }}-alpha
+        release_name: Preview-v${{ steps.getversion.outputs.version }}-alpha
         # Text describing the contents of the tag.
         body_path: CHANGELOG.md
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
-        prerelease: false
+        prerelease: true
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.5
       with:
