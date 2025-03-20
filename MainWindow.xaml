@@ -39,14 +39,14 @@
                         <RowDefinition Height="70*"/>
                         <RowDefinition Height="285*"/>
                     </Grid.RowDefinitions>
-                    <ui:TextBox x:Name="LiveryPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25"/>
+                    <ui:TextBox x:Name="LiveryPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" IsReadOnly="True"/>
                     <Label x:Name="label" Content="2020 Livery Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139"/>
                     <ui:Button Icon="{ui:SymbolIcon Symbol=Folder20, Filled=True,FontSize=30}" x:Name="LiveryPathButton" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" ToolTip="Path to the 2020 Livery you wish to convert. This should be the base directory where layout.json resides" Click="LiveryPathButton_Click"/>
                     <Label x:Name="label_Copy" Content="2024 layout.json" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139" Grid.Row="1"/>
-                    <ui:TextBox x:Name="LayoutPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="1"/>
+                    <ui:TextBox x:Name="LayoutPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="1" IsReadOnly="True"/>
                     <ui:Button Icon="{ui:SymbolIcon Symbol=Folder20, Filled=True,FontSize=30}" x:Name="LayoutPathButton" Grid.Column="3"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" Grid.Row="1" ToolTip="Path to your new converted 2024 livery's layout.json file. NOTE: Follow the paintkit for directory layout for MSFS 2024 as it may differ from 2020 layouts." Click="LayoutPathButton_Click"/>
                     <Label x:Name="label_Copy1" Content="2024 Texture Out Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139" Grid.Row="2"/>
-                    <ui:TextBox x:Name="TexturePath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="2"/>
+                    <ui:TextBox x:Name="TexturePath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="2" IsReadOnly="True"/>
                     <ui:Button Icon="{ui:SymbolIcon Symbol=Folder20, Filled=True,FontSize=30}" x:Name="TexturePathButton" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" Grid.Row="2" ToolTip="Path to the final texture folder inside your new 2024 Livery." Click="TexturePathButton_Click"/>
                     <ui:Button x:Name="button1" Grid.Column="1" Content="Convert Livery Textures!" Grid.RowSpan="2" Grid.Row="3" VerticalAlignment="Stretch" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="5,5,5,5" ToolTip="Check Settings and Paths!" IsEnabled="False" Click="button1_Click"/>
                     <Label x:Name="labelValidation1" Grid.Column="1" Content="Found Texture files successfully!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Visibility="Hidden"/>
@@ -72,10 +72,10 @@
                         <RowDefinition Height="285*"/>
                     </Grid.RowDefinitions>
 
-                    <ui:TextBox x:Name="SDKPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25"/>
+                    <ui:TextBox x:Name="SDKPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" IsReadOnly="True"/>
                     <Label x:Name="label2" Content="MSFS 2024 SDK Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139"/>
                     <ui:Button Icon="{ui:SymbolIcon Symbol=Folder20, Filled=True,FontSize=30}" x:Name="SDKPathButton" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" ToolTip="Base path for the MSFS 2024 SDK. (Example: C:\MSFS 2024 SDK" Click="SDKPathButton_Click"/>
-                    <ui:TextBox x:Name="LGPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="1"/>
+                    <ui:TextBox x:Name="LGPath" TextWrapping="Wrap" Text="..." Grid.ColumnSpan="2" Grid.Column="1" Margin="5,5,5,25" Grid.Row="1" IsReadOnly="True"/>
                     <Label x:Name="label3" Content="Layout Generator Path" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Height="23" Width="139" Grid.Row="1"/>
                     <ui:Button Icon="{ui:SymbolIcon Symbol=Folder20, Filled=True,FontSize=30}" x:Name="LGPathButton" Grid.Column="3"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,5,5,25" Grid.Row="1" ToolTip="Path to MSFSLayoutGenerator.exe" Click="LGPathButton_Click"/>
                     <Label x:Name="labelValidation4" Grid.Column="1" Content="Found SDK!" HorizontalAlignment="Left" Margin="10,57,0,0" VerticalAlignment="Top" Foreground="#C51FFF00" Grid.ColumnSpan="2" FontStyle="Italic" FontSize="7" SnapsToDevicePixels="True" Grid.RowSpan="2" Visibility="Hidden"/>

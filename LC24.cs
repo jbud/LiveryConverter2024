@@ -162,7 +162,7 @@ namespace LiveryConverter2024
                         ConsoleWriteLine("layout.json found! running MSFSLayoutGenerator.exe...");
                         if (File.Exists(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe"))
                         {
-                            await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", mainWindowRef.layout24, true);
+                            await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", "\"" + mainWindowRef.layout24 + "\"", true);
                         }
                         else
                         {

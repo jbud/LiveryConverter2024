@@ -68,6 +68,7 @@ namespace LiveryConverter2024
         {
             if(cwd20 != null && layout24 != null && texpath24 != null && sdkValid && lgValid)
             {
+                button1.ToolTip = "Convert now!";
                 button1.IsEnabled = true;
             }
             else
@@ -248,7 +249,6 @@ namespace LiveryConverter2024
                 }
                 CheckEnableConvertButton();
             }
-            
         }
 
         private void DebugCopyButton_Click(object sender, RoutedEventArgs e)

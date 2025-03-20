@@ -26,6 +26,9 @@
 - Bring in core functionality
 - Detailed TT for Convert Button
 - Fix a bug with LabelValidation for SDK
+- Fields are now Read-Only to prevent confusion.
+- Fix a bug with spaces in layout.json's path
+- 
 
 # 0.1.2 (hotfix-2)
 - [Hotfix]Fix a hang with MSFSLayoutGenerator.exe
