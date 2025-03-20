@@ -6,7 +6,7 @@ name: .NET
 on:
   push:
     branches:
-      - "**"
+      - main
     paths: 
       - 'VERSION.txt'
 
@@ -37,6 +37,31 @@ jobs:
     - name: Read VERSION file
       id: getversion
       run: echo "::set-output name=version::$(cat VERSION.txt)"
+    - name: Get Most Recent Changelog Entry
+      id: change
+      shell: pwsh
+      run: |
+          $changelogPath = "CHANGELOG.md"
+          $lines = Get-Content -Path $changelogPath
+          $beforeNextTag = $true
+          $linesBeforeNextTag = @()
+          $startAt = 1
+          $count = 0
+          foreach ($line in $lines) {
+              if ($line -match "^# ") {
+                  if ($count -eq $startAt) {
+                      $beforeNextTag = $false
+                      break
+                  } else {
+                      $count = $count + 1
+                  }
+              }
+              if ($beforeNextTag) {
+                  $linesBeforeNextTag += $line
+              }
+          }
+          Write-Output $linesBeforeNextTag > TEMPLOG.md
+
     - name: Create a Release in a GitHub Action
       id: create_release
       env:
@@ -48,11 +73,11 @@ jobs:
         # The name of the tag. This should come from the webhook payload, `github.GITHUB_REF` when a user pushes a new tag
         tag_name: ${{ steps.getversion.outputs.version }}
         # The name of the release. For example, `Release v1.0.1`
-        release_name: Preview-v${{ steps.getversion.outputs.version }}-alpha
+        release_name: v${{ steps.getversion.outputs.version }}-beta
         # Text describing the contents of the tag.
-        body_path: CHANGELOG.md
+        body_path: TEMPLOG.md
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
-        prerelease: true
+        prerelease: false
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.5
       with:
@@ -67,6 +92,6 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ./release.zip
-        asset_name: v${{ steps.getversion.outputs.version }}-alpha.zip
+        asset_name: v${{ steps.getversion.outputs.version }}-beta.zip
         asset_content_type: application/zip
               
