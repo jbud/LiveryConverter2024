@@ -30,10 +30,9 @@ jobs:
         run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - uses: Amadevus/pwsh-script@v2
+      - name: Powershell!
         id: change
-        with:
-          script: |
+        run: |
             $changelogPath = "CHANGELOG.md"
             $lines = Get-Content -Path $changelogPath
             $beforeNextTag = $true
