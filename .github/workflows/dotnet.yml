@@ -48,7 +48,7 @@ jobs:
         # The name of the tag. This should come from the webhook payload, `github.GITHUB_REF` when a user pushes a new tag
         tag_name: ${{ steps.getversion.outputs.version }}
         # The name of the release. For example, `Release v1.0.1`
-        release_name: v${{ steps.getversion.outputs.version }}-alpha
+        release_name: v${{ steps.getversion.outputs.version }}-beta
         # Text describing the contents of the tag.
         body_path: CHANGELOG.md
         # `true` to identify the release as a prerelease. `false` to identify the release as a full release. Default: `false`
@@ -67,6 +67,6 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ./release.zip
-        asset_name: v${{ steps.getversion.outputs.version }}-alpha.zip
+        asset_name: v${{ steps.getversion.outputs.version }}-beta.zip
         asset_content_type: application/zip
               
