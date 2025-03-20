@@ -49,7 +49,7 @@ jobs:
                     $linesBeforeNextTag += $line
                 }
             }
-            Write-Output "{name}={linesBeforeNextTag}" >> $GITHUB_OUTPUT
+            Write-Output "{name}={linesBeforeNextTag}" >> $env.GITHUB_OUTPUT
         
       - name: Run a one-line script
         run: Write-Output ${{ steps.change.outputs.Powershell }}
