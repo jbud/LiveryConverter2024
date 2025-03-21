@@ -147,7 +147,7 @@ namespace LiveryConverter2024
 
                     foreach (FileInfo f in i)
                     {
-                        string target = Properties.Settings.Default.texturePath + "\\" + f.Name;
+                        string target = mainWindowRef.texpath24 + "\\" + f.Name;
                         if (File.Exists(target))
                         {
                             ConsoleWriteLine(target + " Already exists! skipping...");
@@ -157,24 +157,24 @@ namespace LiveryConverter2024
                             File.Copy(f.FullName, target);
                         }
                     }
-                    if (File.Exists(Properties.Settings.Default.projectPath + "\\layout.json"))
+                    if (File.Exists(mainWindowRef.layout24))
                     {
                         ConsoleWriteLine("layout.json found! running MSFSLayoutGenerator.exe...");
                         if (File.Exists(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe"))
                         {
-                            await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", Properties.Settings.Default.projectPath + "\\layout.json", true);
+                            await exeClass.SpawnProc(Properties.Settings.Default.layoutGenPath + "\\MSFSLayoutGenerator.exe", "\"" + mainWindowRef.layout24 + "\"", true);
                         }
                         else
                         {
                             ConsoleWriteLine("Error: MSFSLayoutGenerator.exe not found! Layout not updated...");
-                            ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
+                            ConsoleWriteLine("Converted textures can be found here: " + mainWindowRef.texpath24);
                             mainWindowRef.GeneralError = true;
                         }
                     }
                     else
                     {
                         ConsoleWriteLine("Unable to locate layout.json in Project Path");
-                        ConsoleWriteLine("Converted textures can be found here: " + Properties.Settings.Default.texturePath);
+                        ConsoleWriteLine("Converted textures can be found here: " + mainWindowRef.texpath24);
                         mainWindowRef.GeneralError = true;
                     }
                     if (mainWindowRef.GeneralError)
@@ -235,7 +235,7 @@ namespace LiveryConverter2024
                 mainWindowRef.Progress.Visibility = Visibility.Hidden;
                 mainWindowRef.Progress.IsIndeterminate = false;
             });
-            string t = DateTime.Now.ToString(@"MM-dd-yyyy-h-mm-tt");
+            string t = DateTime.Now.ToString(@"MM-dd-yy-HH-mm");
             string log = path + "LC24-" + t + ".log";
             File.WriteAllText(log, mainWindowRef.DebugConsole);
             if (mainWindowRef.GeneralError)

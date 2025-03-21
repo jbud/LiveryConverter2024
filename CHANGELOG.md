@@ -1,3 +1,35 @@
+# 0.2.0
+- Interface 2.0 basic layout.
+- Tooltips added.
+- Setting validation (NF)
+- Functionally unusable, demo is for layout to use set MainWindow2.xaml as entrypoint.
+- Tweak button icons by moving to WPF.UI icons vs converted SVGs. This resulted in much cleaner XAML
+- Add Info button which will eventually show version information and more.
+- Add LabelValidation() function to manage labels with ease using Dispatching.
+- Port DebugConsole() and ConsoleWriteLine() functions to new interface.
+- Version identification, TODO: Add version info to debug logs.
+- Additional info at top of log (include version for support purposes)
+- Set and import settings in settings page.
+- Validation functionality for all validation labels
+	- Special validation for settings, ensuring required EXE files.
+	- Special validation for 2020 livery scanning for DDS files
+	- Special validation for json input ensuring proper naming "layout.json"
+	- Special validation for 2024 texture out by ensuring it's within layout.json's path
+	- Convert button disabled until all validations pass (except texture out)
+- Actions for all buttons except Convert have been implemented.
+- Logfile support improved. Open Log button will immediately write all output to log file and open it.
+- Debug Log can be copied to clipboard with new "animated" copy to clipboard button.
+- Fixed log file naming to use small year, and 24hour time.
+- Debug field now readonly again.
+- Remove artifacts from previous interface
+- Some code documentation
+- Bring in core functionality
+- Detailed TT for Convert Button
+- Fix a bug with LabelValidation for SDK
+- Fields are now Read-Only to prevent confusion.
+- Fix a bug with spaces in layout.json's path
+- 
+
 # 0.1.2 (hotfix-2)
 - [Hotfix]Fix a hang with MSFSLayoutGenerator.exe
 - [Hotfix]Handle errors from MSFSLayoutGenerator.exe
