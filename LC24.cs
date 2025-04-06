@@ -194,7 +194,7 @@ namespace LiveryConverter2024
                     string logPath = "";
                     if (Properties.Settings.Default.store == "Steam")
                     {
-                        logPath = "\\BuilderLogError.txt"; // TODO Default Steam path.
+                        logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Microsoft Flight Simulator 2024\\BuilderLogError.txt";
                     }
                     else
                     {
