@@ -1,3 +1,6 @@
+# 0.2.1
+- Add BuilderLogError.txt opener to provide info on failures for Steam versions (Complete)
+
 # 0.2.0
 - Interface 2.0 basic layout.
 - Tooltips added.
